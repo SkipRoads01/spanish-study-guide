@@ -79,7 +79,9 @@
     display: flex; align-items: center; justify-content: space-between; gap: 16px;
   }
   .brand { font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600; letter-spacing: -0.01em; text-decoration: none; }
+  .brand { display: inline-flex; align-items: center; }
   .brand span { color: var(--accent); }
+  .brand .flag { font-style: normal; font-size: 30px; line-height: 1; margin-left: 10px; }
   .tabs { display: flex; gap: 2px; }
   .tab {
     display: flex; align-items: center; gap: 8px;
@@ -378,7 +380,7 @@
 
 <header class="topbar">
   <div class="topbar-inner">
-    <a class="brand" href="#lessons">Español<span>.</span></a>
+    <a class="brand" href="#lessons">Español<span>.</span><i class="flag" aria-hidden="true">🇪🇸</i></a>
     <nav class="tabs" aria-label="Sections">
       <a class="tab" href="#lessons" data-tab="lessons">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2.5Z"/><path d="M19 19v3H6.5"/></svg>
