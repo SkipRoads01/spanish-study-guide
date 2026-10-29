@@ -211,10 +211,11 @@
   }
   .fc-back { transform: rotateY(180deg); background: var(--surface-2); }
   .fc-big { font-family: Fraunces, Georgia, serif; font-size: clamp(30px, 7vw, 44px); font-weight: 600; line-height: 1.15; letter-spacing: -0.01em; }
+  .fc-big[data-say] { cursor: pointer; transition: color .15s; }
+  .fc-big[data-say]:hover { color: var(--accent); }
   .fc-big .art { font-weight: 500; color: var(--muted); font-size: .6em; margin-right: 6px; }
   .fc-mid { font-size: 20px; line-height: 1.4; }
   .fc-hint { color: var(--muted); font-size: 13px; }
-  .fc-face .icon-btn { position: absolute; top: 14px; right: 14px; }
   .fc-learned { position: absolute; top: 18px; left: 20px; font-size: 12px; font-weight: 600; color: var(--ok); }
   .fc-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-top: 18px; }
   .fc-nav .btn:first-child { justify-self: start; }
@@ -974,7 +975,7 @@ function fcRender() {
     return;
   }
   const w = fc.order[fc.i];
-  const esSide = `<div class="fc-big">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}</div>${w.pos ? `<div class="fc-hint">${w.pos}${w.irr ? ' · irregular' : ''}</div>` : ''}`;
+  const esSide = `<div class="fc-big" data-say="${esc(w.es)}">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}</div>${w.pos ? `<div class="fc-hint">${w.pos}${w.irr ? ' · irregular' : ''}</div>` : ''}`;
   const enSide = `<div class="fc-mid">${w.en.replace(/;\s*/g, '<br>')}</div>`;
   const front = fc.dir === 'es' ? esSide : enSide;
   const back = fc.dir === 'es' ? enSide : esSide;
@@ -984,8 +985,8 @@ function fcRender() {
     <div class="progress"><i style="width:${(fc.i + 1) / fc.order.length * 100}%"></i></div>
     <div class="fc${fc.flipped ? ' flipped' : ''}" id="fc-card" role="button" aria-label="Flip card" tabindex="0">
       <div class="fc-inner">
-        <div class="fc-face">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${fc.dir === 'es' ? sayBtn(w.es) : ''}${front}</div>
-        <div class="fc-face fc-back">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${fc.dir === 'en' ? sayBtn(w.es) : ''}${back}</div>
+        <div class="fc-face">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${front}</div>
+        <div class="fc-face fc-back">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${back}</div>
       </div>
     </div>
     <div class="fc-nav">
@@ -1186,7 +1187,7 @@ function renderResources() {
 
 /* ── Events ── */
 document.addEventListener('click', e => {
-  const t = e.target.closest('button, a');
+  const t = e.target.closest('button, a, [data-say]');
   if (!t) {
     if (e.target.closest('#fc-card')) fcAction('flip');
     return;
