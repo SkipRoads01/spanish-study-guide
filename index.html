@@ -531,8 +531,8 @@ const GRAMMAR = [
   {
     id: 'preterito', es: 'Uso de pretérito para expresar acciones pasadas', en: 'Preterite for past actions',
     rule: 'Use the preterite for finished actions at a specific time: <em>ayer, el sábado, en 2019, el año pasado</em>.',
-    table: {
-      head: ['', 'trabajar', 'aprender', 'vivir'],
+    tables: [{
+      head: ['Regular', 'trabajar', 'aprender', 'vivir'],
       rows: [
         ['yo', 'trabaj<span class="hl">é</span>', 'aprend<span class="hl">í</span>', 'viv<span class="hl">í</span>'],
         ['tú', 'trabaj<span class="hl">aste</span>', 'aprend<span class="hl">iste</span>', 'viv<span class="hl">iste</span>'],
@@ -540,8 +540,16 @@ const GRAMMAR = [
         ['nosotros', 'trabaj<span class="hl">amos</span>', 'aprend<span class="hl">imos</span>', 'viv<span class="hl">imos</span>'],
         ['ellos / ustedes', 'trabaj<span class="hl">aron</span>', 'aprend<span class="hl">ieron</span>', 'viv<span class="hl">ieron</span>'],
       ],
-    },
-    note: 'Common irregulars: ser / ir → <strong>fui</strong>, hacer → <strong>hice</strong>, tener → <strong>tuve</strong>, estar → <strong>estuve</strong>.',
+    }, {
+      head: ['Irregular', 'ser / ir', 'hacer', 'tener', 'estar'],
+      rows: [
+        ['yo', 'fu<span class="hl">i</span>', 'hic<span class="hl">e</span>', 'tuv<span class="hl">e</span>', 'estuv<span class="hl">e</span>'],
+        ['tú', 'fu<span class="hl">iste</span>', 'hic<span class="hl">iste</span>', 'tuv<span class="hl">iste</span>', 'estuv<span class="hl">iste</span>'],
+        ['él / ella / usted', 'fu<span class="hl">e</span>', 'hiz<span class="hl">o</span>', 'tuv<span class="hl">o</span>', 'estuv<span class="hl">o</span>'],
+        ['nosotros', 'fu<span class="hl">imos</span>', 'hic<span class="hl">imos</span>', 'tuv<span class="hl">imos</span>', 'estuv<span class="hl">imos</span>'],
+        ['ellos / ustedes', 'fu<span class="hl">eron</span>', 'hic<span class="hl">ieron</span>', 'tuv<span class="hl">ieron</span>', 'estuv<span class="hl">ieron</span>'],
+      ],
+    }],
     examples: [
       ['Estudié un máster en psicoterapia.', 'I did a master’s in psychotherapy.'],
       ['Fui de vacaciones a México.', 'I went on vacation to Mexico.'],
@@ -975,8 +983,8 @@ function renderGrammar() {
       <summary><div class="gt"><b>${g.en}</b><span>${g.es}</span></div>${ICON.chev}</summary>
       <div class="gbody">
         <div class="rule">${g.rule}</div>
-        ${g.table ? `<div class="table-scroll"><table class="gtable"><thead><tr>${g.table.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
-          <tbody>${g.table.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>` : ''}
+        ${(g.tables || (g.table ? [g.table] : [])).map(t => `<div class="table-scroll"><table class="gtable"><thead><tr>${t.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+          <tbody>${t.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`).join('')}
         ${g.note ? `<div class="rule">${g.note}</div>` : ''}
         <ul class="ex">${g.examples.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div></li>`).join('')}</ul>
       </div>
