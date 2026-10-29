@@ -222,6 +222,17 @@
   .fc-nav .btn:last-child { justify-self: end; }
   .fc-tools { display: flex; justify-content: center; gap: 6px; margin-top: 14px; flex-wrap: wrap; }
   .btn.is-on { color: var(--ok); }
+  .book-btn {
+    width: 44px; height: 32px; justify-content: center; border-radius: 10px; flex: none; border: 1.5px solid var(--border);
+    display: inline-flex; align-items: center; gap: 1px; color: var(--muted); background: var(--surface); transition: all .15s;
+  }
+  .book-btn svg { width: 17px; height: 17px; }
+  .book-btn svg.plus { width: 12px; height: 12px; }
+  .book-btn:hover { border-color: var(--accent); color: var(--accent); }
+  .book-btn[aria-pressed="true"] { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .fc-face .book-btn { position: absolute; top: 14px; right: 14px; }
+  .v-acts { display: flex; align-items: center; gap: 8px; }
+  .chip svg { width: 15px; height: 15px; vertical-align: -3px; margin-right: 4px; }
   .keys { text-align: center; color: var(--muted); font-size: 13px; margin-top: 18px; }
 
   /* ── Quiz ── */
@@ -368,7 +379,7 @@
     .stat span { font-size: 12px; }
     .vrow { grid-template-columns: auto minmax(0, 1fr) auto; }
     .v-en { grid-column: 2; grid-row: 2; margin-top: -6px; }
-    .vrow .check { grid-column: 3; grid-row: 1 / span 2; }
+    .vrow .v-acts { grid-column: 3; grid-row: 1 / span 2; }
     .vrow .icon-btn { grid-row: 1 / span 2; }
     .opts { grid-template-columns: 1fr; }
     .channels, .tasks { grid-template-columns: 1fr; }
@@ -824,6 +835,8 @@ const ICON = {
   chev: '<svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>',
   prev: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>',
   next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
+  book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
+  plus: '<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
   shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
 };
 
@@ -842,6 +855,24 @@ const store = {
 };
 let learned = new Set(store.get('es.learned', []));
 let practice = store.get('es.practice', {});
+let book = new Set(store.get('es.book', []));
+
+const bookBtn = es => `<button class="book-btn" data-book="${esc(es)}" aria-pressed="${book.has(es)}" aria-label="Flashcard book">${book.has(es) ? '' : ICON.plus}${ICON.book}</button>`;
+function toggleBook(es) {
+  book.has(es) ? book.delete(es) : book.add(es);
+  store.set('es.book', [...book]);
+  const drilling = deck === 'book';
+  if (!book.size) { if (vFilter === 'book') vFilter = 'all'; if (deck === 'book') deck = 'all'; }
+  renderVocabFilters(); renderVocab();
+  if (current === 'cards') {
+    if (drilling && !book.has(es)) {
+      if (!book.size) return fcBuild();
+      fc.order.splice(fc.i, 1); if (fc.i >= fc.order.length) fc.i = 0; fc.flipped = false;
+    }
+    fcRender();
+  }
+  if (current === 'quiz' && !qz.qs.length) quizSetup();
+}
 
 function toggleLearned(es) {
   learned.has(es) ? learned.delete(es) : learned.add(es);
@@ -926,6 +957,7 @@ function renderLessons() {
 let vFilter = 'all';
 function renderVocabFilters() {
   const opts = [['all', 'All'], ['word', 'Words'], ['phrase', 'Expressions'], ['verb', 'Verbs'], ['todo', 'To learn']];
+  if (book.size || vFilter === 'book') opts.push(['book', ICON.book + book.size]);
   if (multiLesson()) LESSONS.forEach(l => opts.push([l.id, 'Lección ' + l.n]));
   $('#v-filters').innerHTML = opts.map(([v, t]) => `<button class="chip" data-vf="${v}" aria-pressed="${vFilter === v}">${t}</button>`).join('');
 }
@@ -935,6 +967,7 @@ function renderVocab() {
     if (vFilter === 'word' || vFilter === 'phrase') { if (w.kind !== vFilter) return false; }
     else if (vFilter === 'verb') { if (w.pos !== 'verb') return false; }
     else if (vFilter === 'todo') { if (learned.has(w.es)) return false; }
+    else if (vFilter === 'book') { if (!book.has(w.es)) return false; }
     else if (vFilter !== 'all' && w.lesson !== vFilter) return false;
     return !q || fold(w.es).includes(q) || fold(w.en).includes(q);
   });
@@ -943,16 +976,16 @@ function renderVocab() {
       ${sayBtn(w.es)}
       <div class="v-es">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}${w.pos ? `<span class="tag">${w.pos}</span>` : ''}${w.irr ? '<span class="tag">irregular</span>' : ''}</div>
       <div class="v-en">${w.en.replace(/;\s*/g, '; ')}</div>
-      <button class="check" data-learn="${esc(w.es)}" aria-pressed="${learned.has(w.es)}" aria-label="Learned">${ICON.check}</button>
+      <div class="v-acts">${bookBtn(w.es)}<button class="check" data-learn="${esc(w.es)}" aria-pressed="${learned.has(w.es)}" aria-label="Learned">${ICON.check}</button></div>
     </li>`).join('') : '<li class="empty">No matches</li>';
 }
 
 /* ── Deck chips (flashcards + quiz) ── */
 let deck = 'all';
-const deckWords = d => d === 'all' ? ALL : ALL.filter(w => w.lesson === d);
+const deckWords = d => d === 'all' ? ALL : d === 'book' ? ALL.filter(w => book.has(w.es)) : ALL.filter(w => w.lesson === d);
 function deckChips(attr) {
-  if (DECKS.length < 2) return '';
-  return [['all', 'All'], ...DECKS]
+  if (DECKS.length < 2 && !book.size) return '';
+  return [['all', 'All'], ...DECKS, ...(book.size ? [['book', ICON.book + book.size]] : [])]
     .map(([v, t]) => `<button class="chip" ${attr}="${v}" aria-pressed="${deck === v}">${t}</button>`).join('');
 }
 
@@ -985,8 +1018,8 @@ function fcRender() {
     <div class="progress"><i style="width:${(fc.i + 1) / fc.order.length * 100}%"></i></div>
     <div class="fc${fc.flipped ? ' flipped' : ''}" id="fc-card" role="button" aria-label="Flip card" tabindex="0">
       <div class="fc-inner">
-        <div class="fc-face">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${front}</div>
-        <div class="fc-face fc-back">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${back}</div>
+        <div class="fc-face">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${bookBtn(w.es)}${front}</div>
+        <div class="fc-face fc-back">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${bookBtn(w.es)}${back}</div>
       </div>
     </div>
     <div class="fc-nav">
@@ -999,7 +1032,7 @@ function fcRender() {
       <button class="btn ghost" data-fc="shuffle">${ICON.shuffle}Shuffle</button>
       <button class="btn ghost${fc.hideLearned ? ' is-on' : ''}" data-fc="hide">${fc.hideLearned ? 'Showing unlearned' : 'Hide learned'}</button>
     </div>
-    <div class="keys"><kbd>Space</kbd> flip · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>L</kbd> learned</div>`;
+    <div class="keys"><kbd>Space</kbd> flip · <kbd>←</kbd> <kbd>→</kbd> move · <kbd>L</kbd> learned · <kbd>B</kbd> book</div>`;
 }
 function fcAction(a) {
   if (a === 'flip') { fc.flipped = !fc.flipped; $('#fc-card').classList.toggle('flipped', fc.flipped); return; }
@@ -1029,7 +1062,7 @@ function quizSetup() {
   qz.qs = [];
   $('#quiz-area').innerHTML = `
     <div class="setup panel">
-      ${DECKS.length > 1 ? `<div class="row"><div class="label">Deck</div><div class="chips">${deckChips('data-qdeck')}</div></div>` : ''}
+      ${DECKS.length > 1 || book.size ? `<div class="row"><div class="label">Deck</div><div class="chips">${deckChips('data-qdeck')}</div></div>` : ''}
       <div class="row"><div class="label">Type</div><div class="chips">${MODES.map(([v, t]) => `<button class="chip" data-qmode="${v}" aria-pressed="${qz.mode === v}">${t}</button>`).join('')}</div></div>
       <button class="btn primary" data-q="start">Start · ${Math.min(10, deckWords(deck).length)} questions</button>
     </div>`;
@@ -1195,6 +1228,7 @@ document.addEventListener('click', e => {
   const d = t.dataset;
   if (d.say !== undefined) { e.stopPropagation(); speak(d.say); return; }
   if (d.learn) return toggleLearned(d.learn);
+  if (d.book) return toggleBook(d.book);
   if (d.vf) { vFilter = d.vf; renderVocabFilters(); return renderVocab(); }
   if (d.study) { deck = d.study; fcBuild(); location.hash = 'cards'; return; }
   if (d.quiz) { deck = d.quiz; quizSetup(); location.hash = 'quiz'; return; }
@@ -1228,6 +1262,7 @@ document.addEventListener('keydown', e => {
     else if (e.key === 'ArrowRight') fcAction('next');
     else if (e.key === 'ArrowLeft') fcAction('prev');
     else if (e.key.toLowerCase() === 'l') fcAction('learn');
+    else if (e.key.toLowerCase() === 'b') toggleBook(fc.order[fc.i].es);
   }
   if (current === 'quiz' && qz.qs.length && qz.i < qz.qs.length) {
     const q = qz.qs[qz.i];
