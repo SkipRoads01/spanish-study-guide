@@ -288,6 +288,8 @@
   .ex .icon-btn { width: 32px; height: 32px; }
   .gtable { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 15px; table-layout: fixed; }
   .gtable th:first-child, .gtable td:first-child { width: 150px; }
+  .gtable th { vertical-align: bottom; }
+  .gtable th small { display: block; font-size: 12px; font-weight: 400; letter-spacing: 0; text-transform: none; margin-top: 1px; }
   .gtable th { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 10px 6px 0; }
   .gtable td { padding: 7px 10px 7px 0; border-top: 1px solid var(--border); }
   .gtable td:first-child { color: var(--muted); }
@@ -736,7 +738,7 @@ const GRAMMAR = [
     id: 'perifrasis', es: 'Uso de perífrasis para planes futuros o intención', en: 'Phrases for future plans and intention',
     rule: '<strong>ir a</strong> + infinitive is the everyday way to talk about plans. <strong>pensar</strong>, <strong>querer</strong> and <strong>tener que</strong> + infinitive add intention, desire or obligation.',
     table: {
-      head: ['', 'ir a + infinitive'],
+      head: ['', 'ir a + infinitive<small>to be going to</small>'],
       rows: [
         ['yo', '<span class="hl">voy a</span> estudiar'],
         ['tú', '<span class="hl">vas a</span> estudiar'],
@@ -1116,13 +1118,19 @@ function quizNext() {
 }
 
 /* ── Grammar ── */
+// English under a table's verb heading, e.g. "hablar" → "to speak"; "ser / ir" → "to be / to go".
+function verbMeaning(head) {
+  const parts = head.split(' / ').map(v => ALL.find(w => w.pos === 'verb' && w.es === v));
+  if (!parts.every(Boolean)) return '';
+  return `<small>${parts.map(primary).join(' / ')}</small>`;
+}
 function renderGrammar() {
   $('#g-list').innerHTML = GRAMMAR.map(g => `
     <details class="gitem panel" id="g-${g.id}">
       <summary><div class="gt"><b>${g.en}</b><span>${g.es}</span></div>${ICON.chev}</summary>
       <div class="gbody">
         <div class="rule">${g.rule}</div>
-        ${(g.tables || (g.table ? [g.table] : [])).map(t => `<div class="table-scroll"><table class="gtable"><thead><tr>${t.head.map(h => `<th>${h}</th>`).join('')}</tr></thead>
+        ${(g.tables || (g.table ? [g.table] : [])).map(t => `<div class="table-scroll"><table class="gtable"><thead><tr>${t.head.map((h, i) => `<th>${h}${i ? verbMeaning(h) : ''}</th>`).join('')}</tr></thead>
           <tbody>${t.rows.map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`).join('')}
         ${g.note ? `<div class="rule">${g.note}</div>` : ''}
         <ul class="ex">${g.examples.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div></li>`).join('')}</ul>
