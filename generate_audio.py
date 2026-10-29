@@ -50,6 +50,11 @@ if "--list" in sys.argv:
     print("\n".join(words)); print(f"\n{len(words)} strings"); sys.exit()
 
 API = os.environ.get("ELEVEN_API_KEY", "").strip()
+env_file = os.path.join(HERE, ".env")  # git-ignored
+if not API and os.path.exists(env_file):
+    for line in open(env_file, encoding="utf-8"):
+        if line.startswith("ELEVEN_API_KEY="):
+            API = line.split("=", 1)[1].strip().strip("'\"")
 if not API and sys.stdin.isatty():
     import getpass
     API = getpass.getpass("Paste your ElevenLabs API key (hidden), then press Return: ").strip()
