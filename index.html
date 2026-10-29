@@ -4,19 +4,20 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Español — Study Guide</title>
-<meta name="theme-color" content="#faf8f5" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#141210" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#e9f2f0" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0e1918" media="(prefers-color-scheme: dark)">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
   :root {
-    --bg: #faf8f5;
+    --bg: #ddefea;
     --surface: #ffffff;
-    --surface-2: #f3efe9;
-    --border: #e7e1d8;
-    --text: #1c1917;
-    --muted: #78716c;
+    --surface-2: #dcede8;
+    --border: #c2dbd4;
+    --text: #122321;
+    --muted: #55706b;
+    --glow: rgba(240, 120, 70, .30);
     --accent: #c2410c;
     --accent-soft: #fdeee6;
     --on-accent: #ffffff;
@@ -29,12 +30,13 @@
   }
   @media (prefers-color-scheme: dark) {
     :root {
-      --bg: #141210;
-      --surface: #1c1a17;
-      --surface-2: #25221e;
-      --border: #34302a;
-      --text: #f5f2ee;
-      --muted: #a8a29e;
+      --bg: #0e1918;
+      --surface: #152322;
+      --surface-2: #1c2e2c;
+      --border: #284240;
+      --text: #ecf4f2;
+      --muted: #8fa9a4;
+      --glow: rgba(251, 146, 60, .10);
       --accent: #fb923c;
       --accent-soft: #3a2416;
       --on-accent: #1c1917;
@@ -49,7 +51,10 @@
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html { -webkit-text-size-adjust: 100%; }
   body {
-    background: var(--bg);
+    background:
+      radial-gradient(900px 480px at 92% -6%, var(--glow), transparent 70%) no-repeat,
+      radial-gradient(800px 600px at -10% 105%, rgba(20, 130, 120, .14), transparent 70%) fixed no-repeat,
+      var(--bg);
     color: var(--text);
     font: 400 16px/1.5 Inter, system-ui, sans-serif;
     min-height: 100vh;
