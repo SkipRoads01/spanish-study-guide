@@ -286,7 +286,8 @@
   .ex .es { font-weight: 500; }
   .ex .en { color: var(--muted); font-size: 14px; }
   .ex .icon-btn { width: 32px; height: 32px; }
-  .gtable { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 15px; }
+  .gtable { width: 100%; border-collapse: collapse; margin: 6px 0 14px; font-size: 15px; table-layout: fixed; }
+  .gtable th:first-child, .gtable td:first-child { width: 150px; }
   .gtable th { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 10px 6px 0; }
   .gtable td { padding: 7px 10px 7px 0; border-top: 1px solid var(--border); }
   .gtable td:first-child { color: var(--muted); }
@@ -334,7 +335,8 @@
     /* backdrop-filter would make the header the containing block for the fixed tab bar */
     .topbar { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--bg); }
     .topbar-inner { padding: 12px 16px; }
-    .gtable { font-size: 14px; }
+    .gtable { font-size: 14px; min-width: 340px; }
+    .gtable th:first-child, .gtable td:first-child { width: 92px; }
     .gtable td, .gtable th { padding-right: 8px; }
     .tabs {
       position: fixed; left: 0; right: 0; bottom: 0; z-index: 30;
@@ -505,7 +507,142 @@ const LESSONS = [
   },
 ];
 
+// Reference sets that aren't tied to a lesson; they appear as their own deck.
+const SETS = [
+  {
+    id: 'verbs', title: 'Basic verbs',
+    words: [
+      { es: 'ser', pos: 'verb', irr: true, en: 'to be (identity, traits)' },
+      { es: 'estar', pos: 'verb', irr: true, en: 'to be (location, state)' },
+      { es: 'tener', pos: 'verb', irr: true, en: 'to have' },
+      { es: 'hacer', pos: 'verb', irr: true, en: 'to do; to make' },
+      { es: 'ir', pos: 'verb', irr: true, en: 'to go' },
+      { es: 'poder', pos: 'verb', irr: true, en: 'to be able to; can' },
+      { es: 'querer', pos: 'verb', irr: true, en: 'to want; to love' },
+      { es: 'decir', pos: 'verb', irr: true, en: 'to say; to tell' },
+      { es: 'saber', pos: 'verb', irr: true, en: 'to know (facts, how to)' },
+      { es: 'conocer', pos: 'verb', irr: true, en: 'to know (people, places)' },
+      { es: 'venir', pos: 'verb', irr: true, en: 'to come' },
+      { es: 'dar', pos: 'verb', irr: true, en: 'to give' },
+      { es: 'ver', pos: 'verb', irr: true, en: 'to see; to watch' },
+      { es: 'salir', pos: 'verb', irr: true, en: 'to go out; to leave' },
+      { es: 'poner', pos: 'verb', irr: true, en: 'to put' },
+      { es: 'jugar', pos: 'verb', irr: true, en: 'to play (sports, games)' },
+      { es: 'pensar', pos: 'verb', irr: true, en: 'to think' },
+      { es: 'empezar', pos: 'verb', irr: true, en: 'to begin; to start' },
+      { es: 'dormir', pos: 'verb', irr: true, en: 'to sleep' },
+      { es: 'pedir', pos: 'verb', irr: true, en: 'to ask for; to order' },
+      { es: 'hablar', pos: 'verb', en: 'to speak; to talk' },
+      { es: 'trabajar', pos: 'verb', en: 'to work' },
+      { es: 'estudiar', pos: 'verb', en: 'to study' },
+      { es: 'necesitar', pos: 'verb', en: 'to need' },
+      { es: 'llegar', pos: 'verb', en: 'to arrive' },
+      { es: 'viajar', pos: 'verb', en: 'to travel' },
+      { es: 'practicar', pos: 'verb', en: 'to practice' },
+      { es: 'escuchar', pos: 'verb', en: 'to listen' },
+      { es: 'comer', pos: 'verb', en: 'to eat' },
+      { es: 'beber', pos: 'verb', en: 'to drink' },
+      { es: 'aprender', pos: 'verb', en: 'to learn' },
+      { es: 'leer', pos: 'verb', en: 'to read' },
+      { es: 'vivir', pos: 'verb', en: 'to live' },
+      { es: 'escribir', pos: 'verb', en: 'to write' },
+      { es: 'gustar', pos: 'verb', en: 'to like (to be pleasing)' },
+      { es: 'llamarse', pos: 'verb', en: 'to be called (me llamo…)' },
+    ],
+  },
+];
+
 const GRAMMAR = [
+  {
+    id: 'presente', es: 'El presente', en: 'Present tense',
+    rule: 'Drop <strong>-ar</strong>, <strong>-er</strong> or <strong>-ir</strong> and add the ending for the person. The ending shows who, so <em>yo</em>, <em>tú</em>, etc. are usually left out.',
+    tables: [{
+      head: ['Regular', 'hablar', 'comer', 'vivir'],
+      rows: [
+        ['yo', 'habl<span class="hl">o</span>', 'com<span class="hl">o</span>', 'viv<span class="hl">o</span>'],
+        ['tú', 'habl<span class="hl">as</span>', 'com<span class="hl">es</span>', 'viv<span class="hl">es</span>'],
+        ['él / ella / usted', 'habl<span class="hl">a</span>', 'com<span class="hl">e</span>', 'viv<span class="hl">e</span>'],
+        ['nosotros', 'habl<span class="hl">amos</span>', 'com<span class="hl">emos</span>', 'viv<span class="hl">imos</span>'],
+        ['ellos / ustedes', 'habl<span class="hl">an</span>', 'com<span class="hl">en</span>', 'viv<span class="hl">en</span>'],
+      ],
+    }, {
+      head: ['Irregular', 'ser', 'estar', 'ir', 'dar'],
+      rows: [
+        ['yo', '<span class="hl">soy</span>', '<span class="hl">estoy</span>', '<span class="hl">voy</span>', '<span class="hl">doy</span>'],
+        ['tú', '<span class="hl">eres</span>', 'est<span class="hl">á</span>s', '<span class="hl">vas</span>', 'das'],
+        ['él / ella / usted', '<span class="hl">es</span>', 'est<span class="hl">á</span>', '<span class="hl">va</span>', 'da'],
+        ['nosotros', '<span class="hl">somos</span>', 'estamos', '<span class="hl">vamos</span>', 'damos'],
+        ['ellos / ustedes', '<span class="hl">son</span>', 'est<span class="hl">á</span>n', '<span class="hl">van</span>', 'dan'],
+      ],
+    }, {
+      head: ['Irregular yo + stem', 'tener', 'venir', 'decir'],
+      rows: [
+        ['yo', '<span class="hl">tengo</span>', '<span class="hl">vengo</span>', '<span class="hl">digo</span>'],
+        ['tú', 't<span class="hl">ie</span>nes', 'v<span class="hl">ie</span>nes', 'd<span class="hl">i</span>ces'],
+        ['él / ella / usted', 't<span class="hl">ie</span>ne', 'v<span class="hl">ie</span>ne', 'd<span class="hl">i</span>ce'],
+        ['nosotros', 'tenemos', 'venimos', 'decimos'],
+        ['ellos / ustedes', 't<span class="hl">ie</span>nen', 'v<span class="hl">ie</span>nen', 'd<span class="hl">i</span>cen'],
+      ],
+    }, {
+      head: ['Irregular yo', 'hacer', 'poner', 'salir'],
+      rows: [
+        ['yo', '<span class="hl">hago</span>', '<span class="hl">pongo</span>', '<span class="hl">salgo</span>'],
+        ['tú', 'haces', 'pones', 'sales'],
+        ['él / ella / usted', 'hace', 'pone', 'sale'],
+        ['nosotros', 'hacemos', 'ponemos', 'salimos'],
+        ['ellos / ustedes', 'hacen', 'ponen', 'salen'],
+      ],
+    }, {
+      head: ['Irregular yo', 'saber', 'conocer', 'ver'],
+      rows: [
+        ['yo', '<span class="hl">sé</span>', '<span class="hl">conozco</span>', '<span class="hl">veo</span>'],
+        ['tú', 'sabes', 'conoces', 'ves'],
+        ['él / ella / usted', 'sabe', 'conoce', 've'],
+        ['nosotros', 'sabemos', 'conocemos', 'vemos'],
+        ['ellos / ustedes', 'saben', 'conocen', 'ven'],
+      ],
+    }, {
+      head: ['e → ie', 'querer', 'pensar', 'empezar'],
+      rows: [
+        ['yo', 'qu<span class="hl">ie</span>ro', 'p<span class="hl">ie</span>nso', 'emp<span class="hl">ie</span>zo'],
+        ['tú', 'qu<span class="hl">ie</span>res', 'p<span class="hl">ie</span>nsas', 'emp<span class="hl">ie</span>zas'],
+        ['él / ella / usted', 'qu<span class="hl">ie</span>re', 'p<span class="hl">ie</span>nsa', 'emp<span class="hl">ie</span>za'],
+        ['nosotros', 'queremos', 'pensamos', 'empezamos'],
+        ['ellos / ustedes', 'qu<span class="hl">ie</span>ren', 'p<span class="hl">ie</span>nsan', 'emp<span class="hl">ie</span>zan'],
+      ],
+    }, {
+      head: ['o / u → ue', 'poder', 'dormir', 'jugar'],
+      rows: [
+        ['yo', 'p<span class="hl">ue</span>do', 'd<span class="hl">ue</span>rmo', 'j<span class="hl">ue</span>go'],
+        ['tú', 'p<span class="hl">ue</span>des', 'd<span class="hl">ue</span>rmes', 'j<span class="hl">ue</span>gas'],
+        ['él / ella / usted', 'p<span class="hl">ue</span>de', 'd<span class="hl">ue</span>rme', 'j<span class="hl">ue</span>ga'],
+        ['nosotros', 'podemos', 'dormimos', 'jugamos'],
+        ['ellos / ustedes', 'p<span class="hl">ue</span>den', 'd<span class="hl">ue</span>rmen', 'j<span class="hl">ue</span>gan'],
+      ],
+    }, {
+      head: ['e → i', 'pedir'],
+      rows: [
+        ['yo', 'p<span class="hl">i</span>do'],
+        ['tú', 'p<span class="hl">i</span>des'],
+        ['él / ella / usted', 'p<span class="hl">i</span>de'],
+        ['nosotros', 'pedimos'],
+        ['ellos / ustedes', 'p<span class="hl">i</span>den'],
+      ],
+    }],
+    note: 'Stem changes skip <strong>nosotros</strong>: queremos, podemos, pedimos.<br><strong>ser</strong> — who or what something is. <strong>estar</strong> — where it is, or how it is right now.<br><strong>gustar</strong> agrees with the thing liked: <em>me gusta el café</em>, <em>me gustan los idiomas</em>.',
+    examples: [
+      ['Hablo un poco de español.', 'I speak a little Spanish.'],
+      ['Soy psicoterapeuta.', 'I’m a psychotherapist.'],
+      ['Estoy en casa.', 'I’m at home.'],
+      ['Tengo una pregunta.', 'I have a question.'],
+      ['Voy al torneo el sábado.', 'I’m going to the tournament on Saturday.'],
+      ['Juego al hockey los domingos.', 'I play hockey on Sundays.'],
+      ['Quiero aprender español.', 'I want to learn Spanish.'],
+      ['¿Qué haces hoy?', 'What are you doing today?'],
+      ['No sé.', 'I don’t know.'],
+      ['Me gusta el café.', 'I like coffee.'],
+    ],
+  },
   {
     id: 'enlazar', es: 'Enlazar las palabras', en: 'Linking words',
     rule: 'Spoken Spanish runs words together. A final consonant joins the next word’s vowel, and vowels that meet across words blend into one syllable.',
@@ -680,7 +817,8 @@ const ICON = {
   shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
 };
 
-const ALL = LESSONS.flatMap(l => l.words.map(w => ({ kind: 'word', ...w, lesson: l.id })));
+const ALL = [...LESSONS, ...SETS].flatMap(l => l.words.map(w => ({ kind: 'word', ...w, lesson: l.id })));
+const DECKS = [...LESSONS.map(l => [l.id, 'Lección ' + l.n]), ...SETS.map(s => [s.id, s.title])];
 const primary = w => w.en.split(';')[0].trim();
 const fold = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const clean = s => fold(s).replace(/[¿?¡!.,]/g, '').replace(/\s+/g, ' ').trim();
@@ -777,7 +915,7 @@ function renderLessons() {
 /* ── Vocabulary ── */
 let vFilter = 'all';
 function renderVocabFilters() {
-  const opts = [['all', 'All'], ['word', 'Words'], ['phrase', 'Expressions'], ['todo', 'To learn']];
+  const opts = [['all', 'All'], ['word', 'Words'], ['phrase', 'Expressions'], ['verb', 'Verbs'], ['todo', 'To learn']];
   if (multiLesson()) LESSONS.forEach(l => opts.push([l.id, 'Lección ' + l.n]));
   $('#v-filters').innerHTML = opts.map(([v, t]) => `<button class="chip" data-vf="${v}" aria-pressed="${vFilter === v}">${t}</button>`).join('');
 }
@@ -785,6 +923,7 @@ function renderVocab() {
   const q = fold($('#v-search').value.trim());
   const rows = ALL.filter(w => {
     if (vFilter === 'word' || vFilter === 'phrase') { if (w.kind !== vFilter) return false; }
+    else if (vFilter === 'verb') { if (w.pos !== 'verb') return false; }
     else if (vFilter === 'todo') { if (learned.has(w.es)) return false; }
     else if (vFilter !== 'all' && w.lesson !== vFilter) return false;
     return !q || fold(w.es).includes(q) || fold(w.en).includes(q);
@@ -792,7 +931,7 @@ function renderVocab() {
   $('#v-list').innerHTML = rows.length ? rows.map(w => `
     <li class="vrow">
       ${sayBtn(w.es)}
-      <div class="v-es">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}${w.pos ? `<span class="tag">${w.pos}</span>` : ''}</div>
+      <div class="v-es">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}${w.pos ? `<span class="tag">${w.pos}</span>` : ''}${w.irr ? '<span class="tag">irregular</span>' : ''}</div>
       <div class="v-en">${w.en.replace(/;\s*/g, '; ')}</div>
       <button class="check" data-learn="${esc(w.es)}" aria-pressed="${learned.has(w.es)}" aria-label="Learned">${ICON.check}</button>
     </li>`).join('') : '<li class="empty">No matches</li>';
@@ -802,8 +941,8 @@ function renderVocab() {
 let deck = 'all';
 const deckWords = d => d === 'all' ? ALL : ALL.filter(w => w.lesson === d);
 function deckChips(attr) {
-  if (!multiLesson()) return '';
-  return [['all', 'All lessons'], ...LESSONS.map(l => [l.id, 'Lección ' + l.n])]
+  if (DECKS.length < 2) return '';
+  return [['all', 'All'], ...DECKS]
     .map(([v, t]) => `<button class="chip" ${attr}="${v}" aria-pressed="${deck === v}">${t}</button>`).join('');
 }
 
@@ -826,7 +965,7 @@ function fcRender() {
     return;
   }
   const w = fc.order[fc.i];
-  const esSide = `<div class="fc-big">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}</div>${w.pos ? `<div class="fc-hint">${w.pos}</div>` : ''}`;
+  const esSide = `<div class="fc-big">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}</div>${w.pos ? `<div class="fc-hint">${w.pos}${w.irr ? ' · irregular' : ''}</div>` : ''}`;
   const enSide = `<div class="fc-mid">${w.en.replace(/;\s*/g, '<br>')}</div>`;
   const front = fc.dir === 'es' ? esSide : enSide;
   const back = fc.dir === 'es' ? enSide : esSide;
@@ -880,7 +1019,7 @@ function quizSetup() {
   qz.qs = [];
   $('#quiz-area').innerHTML = `
     <div class="setup panel">
-      ${multiLesson() ? `<div class="row"><div class="label">Deck</div><div class="chips">${deckChips('data-qdeck')}</div></div>` : ''}
+      ${DECKS.length > 1 ? `<div class="row"><div class="label">Deck</div><div class="chips">${deckChips('data-qdeck')}</div></div>` : ''}
       <div class="row"><div class="label">Type</div><div class="chips">${MODES.map(([v, t]) => `<button class="chip" data-qmode="${v}" aria-pressed="${qz.mode === v}">${t}</button>`).join('')}</div></div>
       <button class="btn primary" data-q="start">Start · ${Math.min(10, deckWords(deck).length)} questions</button>
     </div>`;
@@ -1041,8 +1180,8 @@ document.addEventListener('click', e => {
   if (d.say !== undefined) { e.stopPropagation(); speak(d.say); return; }
   if (d.learn) return toggleLearned(d.learn);
   if (d.vf) { vFilter = d.vf; renderVocabFilters(); return renderVocab(); }
-  if (d.study) { deck = multiLesson() ? d.study : 'all'; fcBuild(); location.hash = 'cards'; return; }
-  if (d.quiz) { deck = multiLesson() ? d.quiz : 'all'; quizSetup(); location.hash = 'quiz'; return; }
+  if (d.study) { deck = d.study; fcBuild(); location.hash = 'cards'; return; }
+  if (d.quiz) { deck = d.quiz; quizSetup(); location.hash = 'quiz'; return; }
   if (d.open) { setTimeout(() => { const el = $('#g-' + d.open); el.open = true; el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }, 0); return; }
   if (d.fcdeck) { deck = d.fcdeck; return fcBuild(); }
   if (d.fcdir) { fc.dir = d.fcdir; fc.flipped = false; return fcRender(); }

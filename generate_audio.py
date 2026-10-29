@@ -36,7 +36,7 @@ def spanish_strings():
     start, end = html.index("const LESSONS"), html.index("const CHANNELS")
     js = html[start:end] + """
       const out = [
-        ...LESSONS.flatMap(l => l.words.map(w => w.es)),
+        ...[...LESSONS, ...SETS].flatMap(l => l.words.map(w => w.es)),
         ...GRAMMAR.flatMap(g => g.examples.map(e => e[0])),
       ];
       console.log(JSON.stringify([...new Set(out)]));
