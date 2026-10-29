@@ -50,6 +50,9 @@ if "--list" in sys.argv:
     print("\n".join(words)); print(f"\n{len(words)} strings"); sys.exit()
 
 API = os.environ.get("ELEVEN_API_KEY", "").strip()
+if not API and sys.stdin.isatty():
+    import getpass
+    API = getpass.getpass("Paste your ElevenLabs API key (hidden), then press Return: ").strip()
 if not API:
     sys.exit("ERROR: set ELEVEN_API_KEY first, e.g.  export ELEVEN_API_KEY='sk_...'")
 
