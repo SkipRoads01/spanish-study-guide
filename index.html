@@ -216,6 +216,9 @@
   .fc-big .art { font-weight: 500; color: var(--muted); font-size: .6em; margin-right: 6px; }
   .fc-mid { font-size: 20px; line-height: 1.4; }
   .fc-hint { color: var(--muted); font-size: 13px; }
+  .fc-face.has-conj { padding-bottom: 76px; }
+  .fc-conj { position: absolute; left: 16px; right: 16px; bottom: 14px; display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; font-size: 14px; font-weight: 600; }
+  .fc-conj i { font-style: normal; font-weight: 400; color: var(--muted); margin-right: 4px; }
   .fc-learned { position: absolute; top: 18px; left: 20px; font-size: 12px; font-weight: 600; color: var(--ok); }
   .fc-nav { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; margin-top: 18px; }
   .fc-nav .btn:first-child { justify-self: start; }
@@ -312,7 +315,7 @@
   .gtable th { text-align: left; font-size: 12px; font-weight: 600; letter-spacing: .05em; text-transform: uppercase; color: var(--muted); padding: 6px 10px 6px 0; }
   .gtable td { padding: 7px 10px 7px 0; border-top: 1px solid var(--border); }
   .gtable td:first-child { color: var(--muted); }
-  .gtable .hl { color: var(--accent); font-weight: 600; }
+  .gtable .hl, .fc-conj .hl { color: var(--accent); font-weight: 600; }
   .table-scroll { overflow-x: auto; }
 
   /* ── Practice ── */
@@ -1013,6 +1016,13 @@ function fcBuild(shuffled = false) {
   fc.i = 0; fc.flipped = false;
   fcRender();
 }
+function conjugation(w) {
+  if (!w.irr) return '';
+  const t = GRAMMAR.find(g => g.id === 'presente').tables.find(t => t.head.includes(w.es));
+  if (!t) return '';
+  const col = t.head.indexOf(w.es);
+  return `<div class="fc-conj">${t.rows.map(r => `<span><i>${r[0].split(' ')[0]}</i>${r[col]}</span>`).join('')}</div>`;
+}
 function fcRender() {
   $('#fc-decks').innerHTML = deckChips('data-fcdeck');
   $('#fc-dir').innerHTML = [['es', 'Spanish → English'], ['en', 'English → Spanish']]
@@ -1028,13 +1038,14 @@ function fcRender() {
   const front = fc.dir === 'es' ? esSide : enSide;
   const back = fc.dir === 'es' ? enSide : esSide;
   const isL = learned.has(w.es);
+  const conj = conjugation(w);
   area.innerHTML = `
     <div class="fc-top"><span>${fc.i + 1} / ${fc.order.length}</span><span>${w.kind === 'phrase' ? 'Expression' : 'Word'}</span></div>
     <div class="progress"><i style="width:${(fc.i + 1) / fc.order.length * 100}%"></i></div>
     <div class="fc${fc.flipped ? ' flipped' : ''}" id="fc-card" role="button" aria-label="Flip card" tabindex="0">
       <div class="fc-inner">
         <div class="fc-face">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${bookBtn(w.es)}${front}</div>
-        <div class="fc-face fc-back">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${bookBtn(w.es)}${back}</div>
+        <div class="fc-face fc-back${conj ? ' has-conj' : ''}">${isL ? '<span class="fc-learned">✓ Learned</span>' : ''}${bookBtn(w.es)}${back}${conj}</div>
       </div>
     </div>
     <div class="fc-nav">
