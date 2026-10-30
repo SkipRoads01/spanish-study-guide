@@ -406,6 +406,9 @@
       <a class="tab" href="#cards" data-tab="cards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2.5"/><path d="M7 3h11.5A2.5 2.5 0 0 1 21 5.5V17"/></svg>
         Flashcards</a>
+      <a class="tab" href="#book" data-tab="book">
+        <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 19.5Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-4" fill="none"/></svg>
+        Book</a>
       <a class="tab" href="#quiz" data-tab="quiz">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg>
         Quiz</a>
@@ -450,6 +453,12 @@
       <div class="chips" id="fc-dir"></div>
     </div>
     <div class="fc-wrap" id="fc-area"></div>
+  </section>
+
+  <!-- Flashcard book -->
+  <section class="view" id="view-book" hidden>
+    <div class="view-head"><h1>Book</h1><div class="chips" id="b-actions"></div></div>
+    <ul class="vlist panel" id="b-list"></ul>
   </section>
 
   <!-- Quiz -->
@@ -863,21 +872,21 @@ function toggleBook(es) {
   store.set('es.book', [...book]);
   const drilling = deck === 'book';
   if (!book.size) { if (vFilter === 'book') vFilter = 'all'; if (deck === 'book') deck = 'all'; }
-  renderVocabFilters(); renderVocab();
+  renderVocabFilters(); renderVocab(); renderBook();
   if (current === 'cards') {
     if (drilling && !book.has(es)) {
       if (!book.size) return fcBuild();
       fc.order.splice(fc.i, 1); if (fc.i >= fc.order.length) fc.i = 0; fc.flipped = false;
     }
     fcRender();
-  }
-  if (current === 'quiz' && !qz.qs.length) quizSetup();
+  } else drilling ? fcBuild() : fcRender();
+  if (!qz.qs.length) quizSetup();
 }
 
 function toggleLearned(es) {
   learned.has(es) ? learned.delete(es) : learned.add(es);
   store.set('es.learned', [...learned]);
-  renderLessons(); renderVocab(); renderStats();
+  renderLessons(); renderVocab(); renderBook(); renderStats();
 }
 
 /* ── Speech ── recorded clips (generate_audio.py), browser voice only for text without a clip yet */
@@ -910,7 +919,7 @@ function speak(text) {
 const sayBtn = (text, label = 'Listen') => `<button class="icon-btn" data-say="${esc(text)}" aria-label="${label}">${ICON.speak}</button>`;
 
 /* ── Routing ── */
-const TABS = ['lessons', 'vocab', 'cards', 'quiz', 'grammar', 'practice'];
+const TABS = ['lessons', 'vocab', 'cards', 'book', 'quiz', 'grammar', 'practice'];
 let current = null;
 function go(tab) {
   if (!TABS.includes(tab)) tab = 'lessons';
@@ -961,6 +970,13 @@ function renderVocabFilters() {
   if (multiLesson()) LESSONS.forEach(l => opts.push([l.id, 'Lección ' + l.n]));
   $('#v-filters').innerHTML = opts.map(([v, t]) => `<button class="chip" data-vf="${v}" aria-pressed="${vFilter === v}">${t}</button>`).join('');
 }
+const vocabRow = w => `
+    <li class="vrow">
+      ${sayBtn(w.es)}
+      <div class="v-es">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}${w.pos ? `<span class="tag">${w.pos}</span>` : ''}${w.irr ? '<span class="tag">irregular</span>' : ''}</div>
+      <div class="v-en">${w.en.replace(/;\s*/g, '; ')}</div>
+      <div class="v-acts">${bookBtn(w.es)}<button class="check" data-learn="${esc(w.es)}" aria-pressed="${learned.has(w.es)}" aria-label="Learned">${ICON.check}</button></div>
+    </li>`;
 function renderVocab() {
   const q = fold($('#v-search').value.trim());
   const rows = ALL.filter(w => {
@@ -971,13 +987,12 @@ function renderVocab() {
     else if (vFilter !== 'all' && w.lesson !== vFilter) return false;
     return !q || fold(w.es).includes(q) || fold(w.en).includes(q);
   });
-  $('#v-list').innerHTML = rows.length ? rows.map(w => `
-    <li class="vrow">
-      ${sayBtn(w.es)}
-      <div class="v-es">${w.art ? `<span class="art">${w.art}</span>` : ''}${w.es}${w.pos ? `<span class="tag">${w.pos}</span>` : ''}${w.irr ? '<span class="tag">irregular</span>' : ''}</div>
-      <div class="v-en">${w.en.replace(/;\s*/g, '; ')}</div>
-      <div class="v-acts">${bookBtn(w.es)}<button class="check" data-learn="${esc(w.es)}" aria-pressed="${learned.has(w.es)}" aria-label="Learned">${ICON.check}</button></div>
-    </li>`).join('') : '<li class="empty">No matches</li>';
+  $('#v-list').innerHTML = rows.length ? rows.map(vocabRow).join('') : '<li class="empty">No matches</li>';
+}
+function renderBook() {
+  const ws = deckWords('book');
+  $('#b-actions').innerHTML = ws.length ? `<button class="btn" data-study="book">Flashcards</button><button class="btn" data-quiz="book">Quiz</button>` : '';
+  $('#b-list').innerHTML = ws.length ? ws.map(vocabRow).join('') : '<li class="empty">No cards yet</li>';
 }
 
 /* ── Deck chips (flashcards + quiz) ── */
@@ -1276,6 +1291,7 @@ renderStats();
 renderLessons();
 renderVocabFilters();
 renderVocab();
+renderBook();
 fcBuild();
 quizSetup();
 renderGrammar();
