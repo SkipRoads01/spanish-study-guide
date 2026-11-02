@@ -183,6 +183,14 @@
   }
   .link-row:hover { background: var(--surface-2); }
   .link-row svg { width: 18px; height: 18px; color: var(--muted); flex: none; }
+  .fixes { list-style: none; }
+  .fixes li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); }
+  .fixes li:first-child { border-top: 0; padding-top: 2px; }
+  .fixes s { grid-column: 2; color: var(--muted); font-size: 14px; text-decoration-color: var(--accent); }
+  .fixes .fix { display: contents; }
+  .fixes .fix .icon-btn { grid-column: 1; width: 30px; height: 30px; }
+  .fixes .fix span { grid-column: 2; font-weight: 600; align-self: center; }
+  .fixes small { grid-column: 2; color: var(--muted); font-size: 13px; }
   .lesson-actions { display: flex; gap: 10px; margin-top: 20px; flex-wrap: wrap; }
 
   /* ── Vocabulary ── */
@@ -553,9 +561,57 @@ const LESSONS = [
       { es: 'ponerse en contacto', kind: 'phrase', en: 'to get in touch; to contact' },
     ],
     grammar: ['enlazar', 'edad', 'preterito', 'concordancia', 'variedades', 'perifrasis', 'cortesia'],
+    corrections: [
+      ['Trabajé en finanzas durante diez y cinco años.', 'Trabajé en finanzas durante quince años.', '15 is one word: quince.'],
+      ['los gentes', 'la gente', 'gente is singular.'],
+      ['Mis hijas se gustan nadar.', 'A mis hijas les gusta nadar.', 'gustar takes a + person and les.'],
+      ['Hace probablemente 10 años pasado por la viaje aventura.', 'Hace probablemente diez años que fui de viaje de aventura.', 'hace + time + que + preterite.'],
+      ['Jugo béisbol y mis amigos hablan español en la liga.', 'Juego béisbol y mis amigos hablan español en la liga.', 'jugar → juego. Jugo is juice.'],
+    ],
     materials: [
       { title: 'Importance of immersion at home', file: 'materials/immersion-at-home.pdf' },
       { title: 'YouTube channels for A1–A2', file: 'materials/youtube-channels-a1-a2.pdf' },
+    ],
+  },
+  {
+    id: 'l2', n: 2, date: '2026-11-02', minutes: 60, title: 'Vivir cerca del mar',
+    words: [
+      { es: 'mar', art: 'el', en: 'sea' },
+      { es: 'playa', art: 'la', en: 'beach' },
+      { es: 'pueblo', art: 'el', en: 'town; village' },
+      { es: 'temperatura', art: 'la', en: 'temperature' },
+      { es: 'grados', art: 'los', en: 'degrees' },
+      { es: 'hielo', art: 'el', en: 'ice' },
+      { es: 'hijas', art: 'las', en: 'daughters' },
+      { es: 'nombre', art: 'el', en: 'name' },
+      { es: 'compañero de clase', art: 'el', en: 'classmate' },
+      { es: 'trabajo', art: 'el', en: 'work; job' },
+      { es: 'aviso', art: 'el', en: 'notice; warning; ad' },
+      { es: 'libros', art: 'los', en: 'books' },
+      { es: 'palabra', art: 'la', en: 'word' },
+      { es: 'receta', art: 'la', en: 'recipe; prescription' },
+      { es: 'cocina', art: 'la', en: 'kitchen; cooking; cuisine' },
+      { es: 'tomate', art: 'el', en: 'tomato' },
+      { es: 'aceptar', pos: 'verb', en: 'to accept' },
+      { es: 'planear', pos: 'verb', en: 'to plan' },
+      { es: 'hace tres semanas', kind: 'phrase', en: 'three weeks ago' },
+      { es: 'te va a ir muy bien', kind: 'phrase', en: 'you’re going to do very well' },
+      { es: 'me va bien', kind: 'phrase', en: 'I’m doing well; it works for me' },
+      { es: 'te va bien', kind: 'phrase', en: 'you’re doing well; it suits you' },
+      { es: 'le va bien', kind: 'phrase', en: 'he / she is doing well' },
+      { es: 'nos va bien', kind: 'phrase', en: 'we’re doing well' },
+      { es: 'les va muy bien', kind: 'phrase', en: 'they’re doing very well' },
+    ],
+    grammar: ['hace', 'preterito', 'futuro', 'gustar', 'irbien', 'edad'],
+    corrections: [
+      ['Gracias por la planear.', 'Gracias por planear.', 'No article before a verb.'],
+      ['Sí, vive en el norte de Boston.', 'Sí, vivo en el norte de Boston.', 'yo → vivo.'],
+      ['En una pequeña puebla a nombre de Swampscott.', 'En un pequeño pueblo llamado Swampscott.', 'el pueblo; “called” is llamado.'],
+      ['Cerca de la ser.', 'Cerca del mar.', 'de + el = del; el mar.'],
+      ['Laila es nueva años y Eda es diez y tres años.', 'Laila tiene nueve años y Eda tiene trece años.', 'Age uses tener. 9 is nueve, 13 is trece.'],
+    ],
+    materials: [
+      { title: 'Expressing likes (profedeele)', file: 'https://www.profedeele.es/funciones/expresar-gustos/' },
     ],
   },
 ];
@@ -818,6 +874,77 @@ const GRAMMAR = [
       ['Escríbeme, por favor.', 'Write to me, please.'],
     ],
   },
+  {
+    id: 'hace', es: 'Hace + tiempo', en: 'Hace: “ago” and “for”',
+    rule: '<strong>Hace</strong> + time + preterite means “… ago”. <strong>Hace</strong> + time + <strong>que</strong> + present says how long something has been going on.',
+    examples: [
+      ['Hace tres semanas empecé un curso.', 'I started a course three weeks ago.'],
+      ['Fui de viaje de aventura hace diez años.', 'I went on an adventure trip ten years ago.'],
+      ['Hace quince años que trabajo en finanzas.', 'I’ve been working in finance for fifteen years.'],
+      ['¿Cuánto tiempo hace que vives en Swampscott?', 'How long have you lived in Swampscott?'],
+    ],
+  },
+  {
+    id: 'futuro', es: 'Futuro simple', en: 'Simple future',
+    rule: 'Add <strong>-é, -ás, -á, -emos, -án</strong> to the whole infinitive. For everyday plans, <em>ir a</em> + infinitive is more common.',
+    tables: [{
+      head: ['Regular', 'hablar', 'comer', 'vivir'],
+      rows: [
+        ['yo', 'hablar<span class="hl">é</span>', 'comer<span class="hl">é</span>', 'vivir<span class="hl">é</span>'],
+        ['tú', 'hablar<span class="hl">ás</span>', 'comer<span class="hl">ás</span>', 'vivir<span class="hl">ás</span>'],
+        ['él / ella / usted', 'hablar<span class="hl">á</span>', 'comer<span class="hl">á</span>', 'vivir<span class="hl">á</span>'],
+        ['nosotros', 'hablar<span class="hl">emos</span>', 'comer<span class="hl">emos</span>', 'vivir<span class="hl">emos</span>'],
+        ['ellos / ustedes', 'hablar<span class="hl">án</span>', 'comer<span class="hl">án</span>', 'vivir<span class="hl">án</span>'],
+      ],
+    }, {
+      head: ['Irregular stem', 'tener', 'hacer', 'poder', 'decir'],
+      rows: [
+        ['yo', '<span class="hl">tendr</span>é', '<span class="hl">har</span>é', '<span class="hl">podr</span>é', '<span class="hl">dir</span>é'],
+        ['tú', '<span class="hl">tendr</span>ás', '<span class="hl">har</span>ás', '<span class="hl">podr</span>ás', '<span class="hl">dir</span>ás'],
+        ['él / ella / usted', '<span class="hl">tendr</span>á', '<span class="hl">har</span>á', '<span class="hl">podr</span>á', '<span class="hl">dir</span>á'],
+        ['nosotros', '<span class="hl">tendr</span>emos', '<span class="hl">har</span>emos', '<span class="hl">podr</span>emos', '<span class="hl">dir</span>emos'],
+        ['ellos / ustedes', '<span class="hl">tendr</span>án', '<span class="hl">har</span>án', '<span class="hl">podr</span>án', '<span class="hl">dir</span>án'],
+      ],
+    }],
+    examples: [
+      ['Mañana estudiaré para el examen.', 'Tomorrow I’ll study for the exam.'],
+      ['En diciembre viajaremos a Puerto Rico.', 'In December we’ll travel to Puerto Rico.'],
+      ['Seré psicoterapeuta.', 'I’ll be a psychotherapist.'],
+      ['¿Qué harás el fin de semana?', 'What will you do this weekend?'],
+    ],
+  },
+  {
+    id: 'gustar', es: 'Gustar y pronombres', en: 'Gustar: saying what people like',
+    rule: 'The thing liked is the subject: <strong>gusta</strong> + one thing or a verb, <strong>gustan</strong> + plural. The pronoun says who likes it, and <strong>a</strong> + name or person makes it clear.',
+    tables: [{
+      head: ['Who likes it', 'gustar'],
+      rows: [
+        ['a mí', '<span class="hl">me</span> gusta / gustan'],
+        ['a ti', '<span class="hl">te</span> gusta / gustan'],
+        ['a él / ella / usted', '<span class="hl">le</span> gusta / gustan'],
+        ['a nosotros', '<span class="hl">nos</span> gusta / gustan'],
+        ['a ellos / ustedes', '<span class="hl">les</span> gusta / gustan'],
+      ],
+    }],
+    examples: [
+      ['A mis hijas les gusta nadar.', 'My daughters like swimming.'],
+      ['Me gusta vivir cerca del mar.', 'I like living near the sea.'],
+      ['¿Te gustan los tomates?', 'Do you like tomatoes?'],
+      ['A Laila le gusta jugar en la playa.', 'Laila likes playing on the beach.'],
+      ['Nos gusta la cocina puertorriqueña.', 'We like Puerto Rican food.'],
+    ],
+  },
+  {
+    id: 'irbien', es: 'Ir bien', en: 'Ir bien: how things are going',
+    rule: 'Works like <strong>gustar</strong>: the pronoun says who it’s going well for, and <strong>va</strong> stays the same.',
+    examples: [
+      ['¿Cómo te va?', 'How’s it going?'],
+      ['Me va bien, gracias.', 'I’m doing well, thanks.'],
+      ['A Laila le va bien en la escuela.', 'Laila is doing well at school.'],
+      ['Nos va bien en Swampscott.', 'Things are going well for us in Swampscott.'],
+      ['Te va a ir muy bien.', 'You’re going to do very well.'],
+    ],
+  },
 ];
 
 const CHANNELS = [
@@ -853,8 +980,8 @@ const HABITS = [
 ];
 const PRACTICE_TARGET = 5;
 
-// Tutor's 8-week reactivation program, week 1 = first lesson.
-const PLAN_START = '2026-10-28';
+// Tutor's 8-week reactivation program. Weeks run Monday–Sunday; week 1 holds the first lesson.
+const PLAN_START = '2026-10-26';
 const PLAN = [
   { title: 'Getting Spanish back', goal: 'Recover the language you already know.',
     challenge: 'Speak about yourself for two minutes, with support but without reading.',
@@ -934,7 +1061,7 @@ function toggleLearned(es) {
 
 /* ── Speech ── recorded clips (generate_audio.py), browser voice only for text without a clip yet */
 let AUDIO = {}, curAudio = null;
-fetch('audio/manifest.json').then(r => r.ok ? r.json() : {}).then(m => { AUDIO = m; }).catch(() => {});
+fetch('audio/manifest.json', { cache: 'no-cache' }).then(r => r.ok ? r.json() : {}).then(m => { AUDIO = m; }).catch(() => {});
 let esVoice = null;
 function pickVoice() {
   if (!('speechSynthesis' in window)) return;
@@ -1025,8 +1152,9 @@ function renderLessons() {
       </div>
       ${words.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><div class="chips">${chips(words)}</div></div>` : ''}
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
+      ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([said, fix, why]) => `<li><s>${said}</s><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
       ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="#grammar" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
-      ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
+      ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${/^https?:/.test(m.file) ? ICON.out : ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
       <div class="lesson-actions">
         <button class="btn primary" data-study="${l.id}">Flashcards</button>
         <button class="btn" data-quiz="${l.id}">Quiz</button>

@@ -38,6 +38,7 @@ def spanish_strings():
       const out = [
         ...[...LESSONS, ...SETS].flatMap(l => l.words.map(w => w.es)),
         ...GRAMMAR.flatMap(g => g.examples.map(e => e[0])),
+        ...LESSONS.flatMap(l => (l.corrections || []).map(c => c[1])),
       ];
       console.log(JSON.stringify([...new Set(out)]));
     """
