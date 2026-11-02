@@ -140,6 +140,24 @@
   .stat b { display: block; font-family: Fraunces, Georgia, serif; font-size: 30px; font-weight: 600; line-height: 1.1; }
   .stat span { color: var(--muted); font-size: 14px; }
   .lesson { padding: 22px; margin-bottom: 16px; }
+  .plan { padding: 22px; margin-bottom: 28px; }
+  .plan-weeks { display: grid; grid-template-columns: repeat(8, 1fr); gap: 6px; margin-bottom: 20px; }
+  .pw { height: 34px; border-radius: 10px; border: 1px solid var(--border); background: var(--surface); font-size: 13px; font-weight: 600; color: var(--muted); transition: all .15s; }
+  .pw:hover { border-color: var(--muted); color: var(--text); }
+  .pw.past { background: var(--accent-soft); border-color: transparent; color: var(--accent); }
+  .pw.now { background: var(--accent); border-color: var(--accent); color: var(--on-accent); }
+  .pw[aria-pressed="true"] { box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--text); }
+  .plan h3 { font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600; margin: 2px 0 2px; }
+  .plan-list { list-style: none; margin: 16px 0 6px; }
+  .plan-list li { display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 2px 12px; padding: 10px 12px; border-radius: 12px; }
+  .plan-list li.now { background: var(--surface-2); }
+  .plan-list .wk { font-size: 13px; font-weight: 600; color: var(--muted); grid-row: span 2; padding-top: 2px; }
+  .plan-list li.now .wk { color: var(--accent); }
+  .plan-list b { font-weight: 600; }
+  .plan-list i { font-style: normal; color: var(--muted); font-size: 14px; }
+  .plan-list .lnk { font-size: 13px; color: var(--accent); font-weight: 600; margin-left: 8px; text-decoration: none; }
+  .plan-list .lnk:hover { text-decoration: underline; }
+  .plan .label { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
   .lesson-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
   .eyebrow { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
   .lesson h3 { font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600; margin: 2px 0 2px; }
@@ -328,6 +346,7 @@
   }
   .day.done i { background: var(--accent); color: var(--on-accent); }
   .day.today { color: var(--text); font-weight: 600; }
+  .day.future { opacity: .45; }
   .day.today i { box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent); }
   .practice-card { padding: 22px; }
   .practice-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; }
@@ -430,8 +449,9 @@
     <div class="stats">
       <div class="stat panel"><b id="st-words">0</b><span>words &amp; phrases</span></div>
       <div class="stat panel"><b id="st-learned">0</b><span>learned</span></div>
-      <div class="stat panel"><b id="st-streak">0</b><span>day streak</span></div>
+      <div class="stat panel"><b id="st-streak">0</b><span>practice this week</span></div>
     </div>
+    <div class="plan panel" id="plan"></div>
     <div id="lesson-list"></div>
   </section>
 
@@ -482,7 +502,7 @@
 
     <div class="practice-card panel">
       <div class="practice-head">
-        <b>Today</b>
+        <b>This week</b>
         <span class="sub" id="p-streak"></span>
       </div>
       <div class="week" id="p-week"></div>
@@ -500,7 +520,7 @@
 
     <h2>From your tutor</h2>
     <div class="panel" style="padding: 20px">
-      <div class="quote">Frequency &gt; duration.<small>10–15 minutes daily beats one passive hour a week.</small></div>
+      <div class="quote">Frequency &gt; duration.<small>15–20 minutes, five days a week.</small></div>
     </div>
   </section>
 
@@ -825,13 +845,33 @@ const TASKS = [
 ];
 
 const HABITS = [
-  'Listen to Spanish for 10–20 minutes',
-  'Music — follow the lyrics',
-  'A series or film with Spanish subtitles',
-  'Real-life video: interviews, YouTube',
-  'Read something short',
-  'Repeat phrases out loud',
-  'Think through your day in Spanish',
+  'Listen to a short Spanish recording and pick out familiar expressions',
+  'Repeat useful sentences aloud, linking the words',
+  'Record a 60-second voice message about a familiar topic',
+  'Practise a short question-and-answer sequence without reading',
+  "Use the week's vocabulary in complete sentences",
+];
+const PRACTICE_TARGET = 5;
+
+// Tutor's 8-week reactivation program, week 1 = first lesson.
+const PLAN_START = '2026-10-28';
+const PLAN = [
+  { title: 'Getting Spanish back', goal: 'Recover the language you already know.',
+    challenge: 'Speak about yourself for two minutes, with support but without reading.',
+    weeks: [['Who I am today', 'soy, vivo, estudio, trabajo, tengo, quiero'],
+            ['My everyday life', 'daily activities, frequency, questions, likes']] },
+  { title: 'Spanish for real life in Puerto Rico', goal: 'Understand people and get things done.',
+    challenge: 'Manage three everyday situations without switching to English.',
+    weeks: [['Getting around Puerto Rico', 'hay, está, necesito, busco, ¿dónde…?'],
+            ['Restaurants and everyday encounters', 'quisiera, ¿me puede…?, prices, requests']] },
+  { title: 'Telling your story', goal: 'Move beyond isolated sentences.',
+    challenge: 'Explain why you decided to change careers and describe an important experience.',
+    weeks: [['Experiences and travels', 'past events, common irregular verbs'],
+            ['Changing careers', 'before / now, reasons, intentions and plans']] },
+  { title: 'From answers to conversations', goal: 'Become a more independent speaker.',
+    challenge: 'A five-minute guided conversation and a Puerto Rico role-play.',
+    weeks: [['Talking with other people', 'opinions, clarification, reactions, reformulation'],
+            ['Putting everything together', 'integrated conversations, progress check']] },
 ];
 
 /* ════════════════════════════════════════════
@@ -934,12 +974,42 @@ function go(tab) {
 }
 window.addEventListener('hashchange', () => go(location.hash.slice(1)));
 
+/* ── Plan ── */
+const weekOf = d => Math.floor((new Date(d + 'T12:00') - new Date(PLAN_START + 'T12:00')) / 864e5 / 7) + 1;
+let challenges = new Set(store.get('es.challenges', []));
+let planStage = null;
+function renderPlan() {
+  const live = weekOf(dayKey(new Date()));
+  if (planStage === null) planStage = Math.floor((Math.min(8, Math.max(1, live)) - 1) / 2);
+  const st = PLAN[planStage], first = planStage * 2 + 1;
+  $('#plan').innerHTML = `
+    <div class="plan-weeks">${Array.from({ length: 8 }, (_, i) => {
+      const n = i + 1, cls = n === live ? ' now' : n < live ? ' past' : '';
+      return `<button class="pw${cls}" data-stage="${i >> 1}" aria-pressed="${(i >> 1) === planStage}" aria-label="Week ${n}">${n}</button>`;
+    }).join('')}</div>
+    <div class="eyebrow">Weeks ${first}–${first + 1}</div>
+    <h3>${st.title}</h3>
+    <div class="meta">${st.goal}</div>
+    <ul class="plan-list">${st.weeks.map(([focus, lang], i) => {
+      const n = first + i, ls = LESSONS.filter(l => weekOf(l.date) === n);
+      return `<li class="${n === live ? 'now' : ''}"><span class="wk">Week ${n}</span>
+        <b>${focus}${ls.map(l => `<a class="lnk" href="#lessons" data-lesson="${l.id}">Lección ${l.n}</a>`).join('')}</b><i>${lang}</i></li>`;
+    }).join('')}</ul>
+    <div class="label">Challenge</div>
+    <button class="habit" data-challenge="${planStage}" aria-pressed="${challenges.has(planStage)}"><span class="check">${ICON.check}</span><span>${st.challenge}</span></button>`;
+}
+function toggleChallenge(i) {
+  challenges.has(i) ? challenges.delete(i) : challenges.add(i);
+  store.set('es.challenges', [...challenges]);
+  renderPlan();
+}
+
 /* ── Lessons ── */
 const fmtDate = d => new Date(d + 'T12:00').toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric', year: 'numeric' });
 function renderStats() {
   $('#st-words').textContent = ALL.length;
   $('#st-learned').textContent = ALL.filter(w => learned.has(w.es)).length;
-  $('#st-streak').textContent = streak();
+  $('#st-streak').textContent = `${weekDays()}/${PRACTICE_TARGET}`;
 }
 function renderLessons() {
   $('#lesson-list').innerHTML = [...LESSONS].reverse().map(l => {
@@ -948,9 +1018,9 @@ function renderLessons() {
     const chips = list => list.map(w => `<button class="say-chip${learned.has(w.es) ? ' learned' : ''}" data-say="${esc(w.es)}">${w.es}</button>`).join('');
     const words = ws.filter(w => w.kind === 'word'), phrases = ws.filter(w => w.kind === 'phrase');
     const gram = (l.grammar || []).map(id => GRAMMAR.find(g => g.id === id)).filter(Boolean);
-    return `<article class="lesson panel">
+    return `<article class="lesson panel" id="lesson-${l.id}">
       <div class="lesson-head">
-        <div><div class="eyebrow">Lección ${l.n}</div><h3>${l.title}</h3><div class="meta">${fmtDate(l.date)} · ${l.minutes} min</div></div>
+        <div><div class="eyebrow">Lección ${l.n} · Week ${weekOf(l.date)}</div><h3>${l.title}</h3><div class="meta">${fmtDate(l.date)} · ${l.minutes} min</div></div>
         <div class="ring" style="--p:${done / ws.length}" title="${done} of ${ws.length} learned"><span>${done}/${ws.length}</span></div>
       </div>
       ${words.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><div class="chips">${chips(words)}</div></div>` : ''}
@@ -1209,20 +1279,15 @@ function renderGrammar() {
 const dayKey = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 const addDays = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const didPractice = d => (practice[dayKey(d)] || []).length > 0;
-function streak() {
-  let d = new Date(), n = 0;
-  if (!didPractice(d)) d = addDays(d, -1);
-  while (didPractice(d)) { n++; d = addDays(d, -1); }
-  return n;
-}
+const monday = () => { const d = new Date(); return addDays(d, -((d.getDay() + 6) % 7)); };
+const weekDays = () => Array.from({ length: 7 }, (_, i) => addDays(monday(), i)).filter(didPractice).length;
 function renderPractice() {
   const today = new Date(), tk = dayKey(today), done = practice[tk] || [];
   $('#p-week').innerHTML = Array.from({ length: 7 }, (_, i) => {
-    const d = addDays(today, i - 6);
-    return `<div class="day${didPractice(d) ? ' done' : ''}${i === 6 ? ' today' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })}<i>${d.getDate()}</i></div>`;
+    const d = addDays(monday(), i), k = dayKey(d);
+    return `<div class="day${didPractice(d) ? ' done' : ''}${k === tk ? ' today' : ''}${k > tk ? ' future' : ''}">${d.toLocaleDateString('en-US', { weekday: 'short' })}<i>${d.getDate()}</i></div>`;
   }).join('');
-  const s = streak();
-  $('#p-streak').textContent = s ? `${s}-day streak` : '';
+  $('#p-streak').textContent = `${weekDays()} / ${PRACTICE_TARGET} days`;
   $('#p-habits').innerHTML = HABITS.map((h, i) => `<li><button class="habit" data-habit="${i}" aria-pressed="${done.includes(i)}"><span class="check">${ICON.check}</span><span>${h}</span></button></li>`).join('');
   renderStats();
 }
@@ -1276,6 +1341,9 @@ document.addEventListener('click', e => {
     return;
   }
   if (d.habit !== undefined) return toggleHabit(+d.habit);
+  if (d.challenge !== undefined) return toggleChallenge(+d.challenge);
+  if (d.stage !== undefined) { planStage = +d.stage; return renderPlan(); }
+  if (d.lesson) { e.preventDefault(); $('#lesson-' + d.lesson).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
 });
 document.addEventListener('submit', e => { if (e.target.dataset.q === 'spell') { e.preventDefault(); quizSpell(); } });
 $('#v-search').addEventListener('input', renderVocab);
@@ -1299,6 +1367,7 @@ document.addEventListener('keydown', e => {
 
 /* ── Init ── */
 renderStats();
+renderPlan();
 renderLessons();
 renderVocabFilters();
 renderVocab();
