@@ -31,16 +31,20 @@ MODEL = "eleven_multilingual_v2"
 
 
 def spanish_strings():
-    """Evaluate the content arrays in index.html with node and collect every spoken string."""
+    """Evaluate the content arrays in index.html with node and collect every spoken string.
+
+    Returns [text, spoken] pairs: text is what the site looks up, spoken is what gets
+    recorded. Nouns are recorded with their article (el mar, la playa); a bare short
+    word is also where the voice is most likely to garble it."""
     html = open(os.path.join(HERE, "index.html"), encoding="utf-8").read()
     start, end = html.index("const LESSONS"), html.index("const CHANNELS")
     js = html[start:end] + """
       const out = [
-        ...[...LESSONS, ...SETS].flatMap(l => l.words.map(w => w.es)),
-        ...GRAMMAR.flatMap(g => g.examples.map(e => e[0])),
-        ...LESSONS.flatMap(l => (l.corrections || []).map(c => c[1])),
+        ...[...LESSONS, ...SETS].flatMap(l => l.words.map(w => [w.es, w.art ? w.art.split(' / ')[0] + ' ' + w.es : w.es])),
+        ...GRAMMAR.flatMap(g => g.examples.map(e => [e[0], e[0]])),
+        ...LESSONS.flatMap(l => (l.corrections || []).map(c => [c[1], c[1]])),
       ];
-      console.log(JSON.stringify([...new Set(out)]));
+      console.log(JSON.stringify([...new Map(out).entries()]));
     """
     res = subprocess.run(["node", "-e", js], capture_output=True, text=True, check=True)
     return json.loads(res.stdout)
@@ -48,7 +52,7 @@ def spanish_strings():
 
 words = spanish_strings()
 if "--list" in sys.argv:
-    print("\n".join(words)); print(f"\n{len(words)} strings"); sys.exit()
+    print("\n".join(spoken for _, spoken in words)); print(f"\n{len(words)} strings"); sys.exit()
 
 API = os.environ.get("ELEVEN_API_KEY", "").strip()
 env_file = os.path.join(HERE, ".env")  # git-ignored
@@ -85,18 +89,18 @@ def tts(text, path):
 
 
 manifest, fails = {}, []
-for i, text in enumerate(words, 1):
+for i, (text, spoken) in enumerate(words, 1):
     # Voice is part of the hash so switching VOICE_ID regenerates everything.
-    fname = hashlib.md5(f"{vid}|{text}".encode("utf-8")).hexdigest()[:16] + ".mp3"
+    fname = hashlib.md5(f"{vid}|{spoken}".encode("utf-8")).hexdigest()[:16] + ".mp3"
     path = os.path.join(OUT_DIR, fname)
     manifest[text] = fname
     if os.path.exists(path) and os.path.getsize(path) > 0:
-        print(f"  [{i:2}/{len(words)}] skip  {text}")
+        print(f"  [{i:2}/{len(words)}] skip  {spoken}")
         continue
     for attempt in range(4):
         try:
-            n = tts(text, path)
-            print(f"  [{i:2}/{len(words)}] ok    {text} ({n}B)")
+            n = tts(spoken, path)
+            print(f"  [{i:2}/{len(words)}] ok    {spoken} ({n}B)")
             break
         except urllib.error.HTTPError as e:
             msg = e.read().decode("utf-8", "replace")[:200]
