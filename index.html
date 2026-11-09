@@ -92,6 +92,7 @@
   .tab:hover { color: var(--text); background: var(--surface-2); }
   .tab[aria-current="page"] { background: var(--text); color: var(--bg); }
   .tab svg { display: none; width: 22px; height: 22px; }
+  .tab .short { display: none; }
 
   main { max-width: 880px; margin: 0 auto; padding: 32px 20px 64px; }
   .view-head { display: flex; align-items: end; justify-content: space-between; gap: 16px; margin-bottom: 20px; flex-wrap: wrap; }
@@ -402,7 +403,9 @@
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
     }
-    .tab { flex-direction: column; gap: 3px; padding: 6px 2px; font-size: 11px; flex: 1; border-radius: 10px; }
+    .tab { flex-direction: column; gap: 3px; padding: 6px 0; font-size: 10px; flex: 1; min-width: 0; white-space: nowrap; border-radius: 10px; }
+    .tab .long { display: none; }
+    .tab .short { display: inline; }
     .tab svg { display: block; }
     .tab[aria-current="page"] { background: none; color: var(--accent); }
     .tab:hover { background: none; }
@@ -434,13 +437,16 @@
         Lessons</a>
       <a class="tab" href="#vocab" data-tab="vocab">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M8 6h13M8 12h13M8 18h13M3.5 6h.01M3.5 12h.01M3.5 18h.01"/></svg>
-        Vocabulary</a>
+        <span class="long">Vocabulary</span><span class="short">Vocab</span></a>
+      <a class="tab" href="#natural" data-tab="natural">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
+        Natural</a>
       <a class="tab" href="#grammar" data-tab="grammar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>
         Grammar</a>
       <a class="tab" href="#cards" data-tab="cards">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"><rect x="3" y="6" width="14" height="14" rx="2.5"/><path d="M7 3h11.5A2.5 2.5 0 0 1 21 5.5V17"/></svg>
-        Flashcards</a>
+        <span class="long">Flashcards</span><span class="short">Cards</span></a>
       <a class="tab" href="#book" data-tab="book">
         <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 19.5Z"/><path d="M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-4" fill="none"/></svg>
         Book</a>
@@ -489,6 +495,12 @@
       <div class="chips" id="fc-dir"></div>
     </div>
     <div class="fc-wrap" id="fc-area"></div>
+  </section>
+
+  <!-- Natural phrasing flagged by the tutor -->
+  <section class="view" id="view-natural" hidden>
+    <div class="view-head"><h1>Natural</h1><div class="chips" id="n-actions"></div></div>
+    <ul class="vlist panel" id="n-list"></ul>
   </section>
 
   <!-- Flashcard book -->
@@ -600,8 +612,9 @@ const LESSONS = [
       { es: 'aceptar', pos: 'verb', en: 'to accept' },
       { es: 'planear', pos: 'verb', en: 'to plan' },
       { es: 'hace tres semanas', kind: 'phrase', en: 'three weeks ago' },
-      { es: 'te va a ir muy bien', kind: 'phrase', en: 'you’re going to do very well' },
-      { es: 'me va bien', kind: 'phrase', en: 'I’m doing well; it works for me' },
+      { es: '¿cómo te va?', kind: 'phrase', natural: true, en: 'how’s it going?' },
+      { es: 'te va a ir muy bien', kind: 'phrase', natural: true, en: 'you’re going to do very well' },
+      { es: 'me va bien', kind: 'phrase', natural: true, en: 'I’m doing well; it works for me' },
       { es: 'te va bien', kind: 'phrase', en: 'you’re doing well; it suits you' },
       { es: 'le va bien', kind: 'phrase', en: 'he / she is doing well' },
       { es: 'nos va bien', kind: 'phrase', en: 'we’re doing well' },
@@ -1047,7 +1060,7 @@ function toggleBook(es) {
   store.set('es.book', [...book]);
   const drilling = deck === 'book';
   if (!book.size) { if (vFilter === 'book') vFilter = 'all'; if (deck === 'book') deck = 'all'; }
-  renderVocabFilters(); renderVocab(); renderBook();
+  renderVocabFilters(); renderVocab(); renderBook(); renderNatural();
   if (current === 'cards') {
     if (drilling && !book.has(es)) {
       if (!book.size) return fcBuild();
@@ -1061,7 +1074,7 @@ function toggleBook(es) {
 function toggleLearned(es) {
   learned.has(es) ? learned.delete(es) : learned.add(es);
   store.set('es.learned', [...learned]);
-  renderLessons(); renderVocab(); renderBook(); renderStats();
+  renderLessons(); renderVocab(); renderBook(); renderNatural(); renderStats();
 }
 
 /* ── Speech ── recorded clips (generate_audio.py), browser voice only for text without a clip yet */
@@ -1094,7 +1107,7 @@ function speak(text) {
 const sayBtn = (text, label = 'Listen') => `<button class="icon-btn" data-say="${esc(text)}" aria-label="${label}">${ICON.speak}</button>`;
 
 /* ── Routing ── */
-const TABS = ['lessons', 'vocab', 'cards', 'book', 'quiz', 'grammar', 'practice'];
+const TABS = ['lessons', 'vocab', 'natural', 'cards', 'book', 'quiz', 'grammar', 'practice'];
 let current = null;
 function go(tab) {
   if (!TABS.includes(tab)) tab = 'lessons';
@@ -1148,7 +1161,7 @@ function renderLessons() {
     const ws = ALL.filter(w => w.lesson === l.id);
     const done = ws.filter(w => learned.has(w.es)).length;
     const chips = list => list.map(w => `<button class="say-chip${learned.has(w.es) ? ' learned' : ''}" data-say="${esc(w.es)}">${w.es}</button>`).join('');
-    const words = ws.filter(w => w.kind === 'word'), phrases = ws.filter(w => w.kind === 'phrase');
+    const words = ws.filter(w => w.kind === 'word'), phrases = ws.filter(w => w.kind === 'phrase' && !w.natural), natural = ws.filter(w => w.natural);
     const gram = (l.grammar || []).map(id => GRAMMAR.find(g => g.id === id)).filter(Boolean);
     return `<article class="lesson panel" id="lesson-${l.id}">
       <div class="lesson-head">
@@ -1157,6 +1170,7 @@ function renderLessons() {
       </div>
       ${words.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><div class="chips">${chips(words)}</div></div>` : ''}
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
+      ${natural.length ? `<div class="lesson-block"><div class="label">Natural</div><div class="chips">${chips(natural)}</div></div>` : ''}
       ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([said, fix, why]) => `<li><s>${said}</s><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
       ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="#grammar" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
       ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${/^https?:/.test(m.file) ? ICON.out : ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
@@ -1195,6 +1209,11 @@ function renderVocab() {
   });
   $('#v-list').innerHTML = rows.length ? rows.map(vocabRow).join('') : '<li class="empty">No matches</li>';
 }
+function renderNatural() {
+  const ws = deckWords('natural');
+  $('#n-actions').innerHTML = ws.length ? `<button class="btn" data-study="natural">Flashcards</button><button class="btn" data-quiz="natural">Quiz</button>` : '';
+  $('#n-list').innerHTML = ws.length ? ws.map(vocabRow).join('') : '<li class="empty">Nothing yet</li>';
+}
 function renderBook() {
   const ws = deckWords('book');
   $('#b-actions').innerHTML = ws.length ? `<button class="btn" data-study="book">Flashcards</button><button class="btn" data-quiz="book">Quiz</button>` : '';
@@ -1203,10 +1222,10 @@ function renderBook() {
 
 /* ── Deck chips (flashcards + quiz) ── */
 let deck = 'all';
-const deckWords = d => d === 'all' ? ALL : d === 'book' ? ALL.filter(w => book.has(w.es)) : ALL.filter(w => w.lesson === d);
+const deckWords = d => d === 'all' ? ALL : d === 'book' ? ALL.filter(w => book.has(w.es)) : d === 'natural' ? ALL.filter(w => w.natural) : ALL.filter(w => w.lesson === d);
 function deckChips(attr) {
   if (DECKS.length < 2 && !book.size) return '';
-  return [['all', 'All'], ...DECKS, ...(book.size ? [['book', ICON.book + book.size]] : [])]
+  return [['all', 'All'], ...DECKS, ...(ALL.some(w => w.natural) ? [['natural', 'Natural']] : []), ...(book.size ? [['book', ICON.book + book.size]] : [])]
     .map(([v, t]) => `<button class="chip" ${attr}="${v}" aria-pressed="${deck === v}">${t}</button>`).join('');
 }
 
@@ -1506,6 +1525,7 @@ renderLessons();
 renderVocabFilters();
 renderVocab();
 renderBook();
+renderNatural();
 fcBuild();
 quizSetup();
 renderGrammar();
