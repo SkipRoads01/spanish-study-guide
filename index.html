@@ -524,6 +524,8 @@
     <div class="view-head"><h1>Verbs</h1></div>
     <h2 class="first">Tenses</h2>
     <div id="vb-tenses"></div>
+    <h2>Reflexive verbs</h2>
+    <div id="vb-reflexive"></div>
     <h2>Verbs like gustar</h2>
     <div id="vb-like"></div>
     <h2>All verbs</h2>
@@ -647,11 +649,42 @@ const LESSONS = [
     ],
   },
   {
-    id: 'l3', n: 3, date: '2026-11-09', minutes: 60, title: 'Mi vida actual',
+    id: 'l3', n: 3, date: '2026-11-09', minutes: 60, title: 'El tiempo, los gustos y la rutina',
     words: [
       { es: 'cambio de profesión', art: 'el', en: 'career change' },
       { es: 'retos', art: 'los', en: 'challenges' },
       { es: 'suponer', pos: 'verb', en: 'to involve; to mean; to suppose' },
+      { es: 'lluvioso', pos: 'adj', en: 'rainy' },
+      { es: 'tampoco', en: 'neither; not … either' },
+      { es: 'levantarse', pos: 'verb', en: 'to get up' },
+      { es: 'desayunar', pos: 'verb', en: 'to have breakfast' },
+      { es: 'pasar', pos: 'verb', en: 'to happen; to spend (time); to pass' },
+      { es: 'hace frío', kind: 'phrase', en: 'it’s cold' },
+      { es: 'hace calor', kind: 'phrase', en: 'it’s hot' },
+      { es: 'hace veinte grados', kind: 'phrase', en: 'it’s twenty degrees' },
+      { es: 'está nublado', kind: 'phrase', en: 'it’s cloudy' },
+      { es: 'está soleado', kind: 'phrase', en: 'it’s sunny' },
+      { es: 'llueve', kind: 'phrase', en: 'it’s raining; it rains' },
+      { es: 'nieva', kind: 'phrase', en: 'it’s snowing; it snows' },
+      { es: 'por la mañana', kind: 'phrase', en: 'in the morning' },
+      { es: 'por la tarde', kind: 'phrase', en: 'in the afternoon' },
+      { es: 'por la noche', kind: 'phrase', en: 'at night; in the evening' },
+      { es: 'me gusta mucho', kind: 'phrase', en: 'I like it a lot' },
+      { es: 'me gusta bastante', kind: 'phrase', en: 'I quite like it' },
+      { es: 'no me gusta nada', kind: 'phrase', en: 'I don’t like it at all' },
+      { es: 'a mí también', kind: 'phrase', en: 'me too' },
+      { es: 'a mí tampoco', kind: 'phrase', en: 'me neither' },
+      { es: 'depende del día', kind: 'phrase', en: 'it depends on the day' },
+      { es: 'por tanto', kind: 'phrase', en: 'therefore; so' },
+      { es: 'tomar una siesta', kind: 'phrase', en: 'to take a nap' },
+    ],
+    grammar: ['tiempo', 'gustar', 'momentos', 'reflexivos', 'continuo', 'perfecto', 'comparativos'],
+    corrections: [
+      ['Hace poco de frío.', 'Hace un poco de frío.', 'un poco = a little. Poco alone means “not much”.'],
+      ['Me gusta las películas españolas.', 'Me gustan las películas españolas.', 'Plural thing liked → gustan.'],
+      ['Mis hijas les gustan.', 'A mis hijas les gusta.', 'a + person; gusta agrees with the thing liked.'],
+      ['Me gustan chino, español e inglés.', 'Me gustan el chino, el español y el inglés.', 'Languages take el after gustar.'],
+      ['Por la noche prefiero gustar.', 'Por la noche prefiero estudiar.', 'preferir + the activity itself.'],
     ],
     notes: [
       ['De mi vida actual me gusta mi cambio de profesión y los nuevos retos que ello supone.', 'What I like about my life now is my career change and the new challenges it brings.'],
@@ -981,8 +1014,106 @@ const GRAMMAR = [
       ['A mis hijas les gusta nadar.', 'My daughters like swimming.'],
       ['Me gusta vivir cerca del mar.', 'I like living near the sea.'],
       ['¿Te gustan los tomates?', 'Do you like tomatoes?'],
+      ['Me gustan las películas españolas.', 'I like Spanish films.'],
+      ['No me gusta nada levantarme temprano. —A mí tampoco.', 'I don’t like getting up early at all. —Me neither.'],
       ['A Laila le gusta jugar en la playa.', 'Laila likes playing on the beach.'],
       ['Nos gusta la cocina puertorriqueña.', 'We like Puerto Rican food.'],
+    ],
+  },
+  {
+    id: 'continuo', verbs: 'tense', es: 'Estar + gerundio', en: 'Present continuous: happening now',
+    rule: '<strong>Estar</strong> + gerund: <strong>-ar → -ando</strong>, <strong>-er / -ir → -iendo</strong>. Only for what’s happening right now, not for plans.',
+    tables: [{
+      head: ['Estar + gerund', 'hablar', 'comer', 'vivir'],
+      rows: [
+        ['yo', 'estoy habl<span class="hl">ando</span>', 'estoy com<span class="hl">iendo</span>', 'estoy viv<span class="hl">iendo</span>'],
+        ['tú', 'estás habl<span class="hl">ando</span>', 'estás com<span class="hl">iendo</span>', 'estás viv<span class="hl">iendo</span>'],
+        ['él / ella / usted', 'está habl<span class="hl">ando</span>', 'está com<span class="hl">iendo</span>', 'está viv<span class="hl">iendo</span>'],
+        ['nosotros', 'estamos habl<span class="hl">ando</span>', 'estamos com<span class="hl">iendo</span>', 'estamos viv<span class="hl">iendo</span>'],
+        ['ellos / ustedes', 'están habl<span class="hl">ando</span>', 'están com<span class="hl">iendo</span>', 'están viv<span class="hl">iendo</span>'],
+      ],
+    }],
+    note: 'Irregular gerunds: leer → <em>leyendo</em>, dormir → <em>durmiendo</em>, pedir → <em>pidiendo</em>.',
+    examples: [
+      ['Estoy leyendo un libro interesante.', 'I’m reading an interesting book.'],
+      ['¿Qué estás haciendo?', 'What are you doing?'],
+      ['Mis hijas están durmiendo.', 'My daughters are sleeping.'],
+    ],
+  },
+  {
+    id: 'perfecto', verbs: 'tense', es: 'El pretérito perfecto', en: 'Present perfect: have done',
+    rule: '<strong>Haber</strong> in the present + participle: <strong>-ar → -ado</strong>, <strong>-er / -ir → -ido</strong>. For the recent past and for experiences, often with <em>hoy, esta semana, ya, nunca</em>.',
+    tables: [{
+      head: ['Haber + participle', 'hablar', 'comer', 'vivir'],
+      rows: [
+        ['yo', 'he habl<span class="hl">ado</span>', 'he com<span class="hl">ido</span>', 'he viv<span class="hl">ido</span>'],
+        ['tú', 'has habl<span class="hl">ado</span>', 'has com<span class="hl">ido</span>', 'has viv<span class="hl">ido</span>'],
+        ['él / ella / usted', 'ha habl<span class="hl">ado</span>', 'ha com<span class="hl">ido</span>', 'ha viv<span class="hl">ido</span>'],
+        ['nosotros', 'hemos habl<span class="hl">ado</span>', 'hemos com<span class="hl">ido</span>', 'hemos viv<span class="hl">ido</span>'],
+        ['ellos / ustedes', 'han habl<span class="hl">ado</span>', 'han com<span class="hl">ido</span>', 'han viv<span class="hl">ido</span>'],
+      ],
+    }, {
+      head: ['Irregular', 'hacer', 'decir', 'ver', 'poner'],
+      rows: [
+        ['participle', '<span class="hl">hecho</span>', '<span class="hl">dicho</span>', '<span class="hl">visto</span>', '<span class="hl">puesto</span>'],
+      ],
+    }],
+    examples: [
+      ['He terminado mi tarea.', 'I’ve finished my homework.'],
+      ['Hoy he estudiado español.', 'I’ve studied Spanish today.'],
+      ['¿Has visto la película?', 'Have you seen the film?'],
+      ['Nunca he estado en Puerto Rico.', 'I’ve never been to Puerto Rico.'],
+    ],
+  },
+  {
+    id: 'reflexivos', verbs: 'reflexive', es: 'Verbos reflexivos', en: 'Reflexive verbs: levantarse',
+    rule: 'The pronoun matches the person: <strong>me, te, se, nos, se</strong>. It goes before the verb, or joins the end of an infinitive: <em>tengo que levantarme</em>.',
+    tables: [{
+      head: ['Reflexive', 'levantarse'],
+      rows: [
+        ['yo', '<span class="hl">me</span> levanto'],
+        ['tú', '<span class="hl">te</span> levantas'],
+        ['él / ella / usted', '<span class="hl">se</span> levanta'],
+        ['nosotros', '<span class="hl">nos</span> levantamos'],
+        ['ellos / ustedes', '<span class="hl">se</span> levantan'],
+      ],
+    }],
+    examples: [
+      ['Me levanto temprano todos los días.', 'I get up early every day.'],
+      ['¿A qué hora te levantas?', 'What time do you get up?'],
+      ['Tengo que levantarme a las seis.', 'I have to get up at six.'],
+      ['Mis hijas se levantan tarde los sábados.', 'My daughters get up late on Saturdays.'],
+    ],
+  },
+  {
+    id: 'tiempo', es: 'El tiempo y el clima', en: 'Talking about the weather',
+    rule: '<strong>Hace</strong> + frío / calor / sol / viento / grados. <strong>Está</strong> + nublado / soleado. Rain and snow are verbs: <strong>llueve</strong>, <strong>nieva</strong>.',
+    examples: [
+      ['Hace un poco de frío.', 'It’s a little cold.'],
+      ['Hoy hace veinte grados.', 'It’s twenty degrees today.'],
+      ['Está nublado, pero no llueve.', 'It’s cloudy, but it isn’t raining.'],
+      ['En Swampscott nieva en invierno.', 'It snows in Swampscott in winter.'],
+      ['En Puerto Rico hace calor todo el año.', 'It’s hot in Puerto Rico all year.'],
+    ],
+  },
+  {
+    id: 'momentos', es: 'Por la mañana, por la tarde, por la noche', en: 'Parts of the day',
+    rule: '<strong>Por la mañana / tarde / noche</strong> for a general part of the day. With a clock time, use <strong>de</strong>: <em>a las ocho de la mañana</em>.',
+    examples: [
+      ['Por la mañana me levanto temprano.', 'In the morning I get up early.'],
+      ['Por la tarde estudio español.', 'In the afternoon I study Spanish.'],
+      ['Por la noche prefiero estudiar.', 'At night I prefer to study.'],
+      ['Desayuno a las ocho de la mañana.', 'I have breakfast at eight in the morning.'],
+    ],
+  },
+  {
+    id: 'comparativos', es: 'Comparativos y superlativos', en: 'Comparing: más… que, tan… como, -ísimo',
+    rule: '<strong>más / menos</strong> + adjective + <strong>que</strong> to compare; <strong>tan</strong> + adjective + <strong>como</strong> for “as … as”. Add <strong>-ísimo</strong> for “really”: <em>bueno → buenísimo</em>.',
+    examples: [
+      ['Este libro es más interesante que el otro.', 'This book is more interesting than the other one.'],
+      ['El español es menos difícil que el chino.', 'Spanish is less difficult than Chinese.'],
+      ['Puerto Rico es tan bonito como dicen.', 'Puerto Rico is as beautiful as they say.'],
+      ['La comida está buenísima.', 'The food is really good.'],
     ],
   },
   {
@@ -1464,7 +1595,9 @@ function renderGrammar() {
       </div>
     </details>`;
   $('#g-list').innerHTML = GRAMMAR.filter(g => !g.verbs).map(item).join('');
-  $('#vb-tenses').innerHTML = GRAMMAR.filter(g => g.verbs === 'tense').map(item).join('');
+  const order = ['presente', 'continuo', 'perfecto', 'preterito', 'perifrasis', 'futuro'];
+  $('#vb-tenses').innerHTML = GRAMMAR.filter(g => g.verbs === 'tense').sort((x, y) => order.indexOf(x.id) - order.indexOf(y.id)).map(item).join('');
+  $('#vb-reflexive').innerHTML = GRAMMAR.filter(g => g.verbs === 'reflexive').map(item).join('');
   $('#vb-like').innerHTML = GRAMMAR.filter(g => g.verbs === 'like').map(item).join('');
   renderVerbList();
 }

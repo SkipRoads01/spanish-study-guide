@@ -27,7 +27,9 @@ except Exception:
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 OUT_DIR = os.path.join(HERE, "audio")
-MODEL = "eleven_multilingual_v2"
+# v3 told the text is Spanish: the multilingual v2 model read Spanish with an English accent.
+MODEL = "eleven_v3"
+LANGUAGE = "es"
 
 
 def spanish_strings():
@@ -74,11 +76,7 @@ print(f"Voice {vid}  model={MODEL}\nGenerating {len(words)} clips into audio/ ..
 
 
 def tts(text, path):
-    body = json.dumps({
-        "text": text,
-        "model_id": MODEL,
-        "voice_settings": {"stability": 0.55, "similarity_boost": 0.8, "style": 0.0, "use_speaker_boost": True},
-    }).encode("utf-8")
+    body = json.dumps({"text": text, "model_id": MODEL, "language_code": LANGUAGE}).encode("utf-8")
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{vid}?output_format=mp3_44100_128"
     req = urllib.request.Request(url, data=body, method="POST",
         headers={"xi-api-key": API, "Content-Type": "application/json", "Accept": "audio/mpeg"})
@@ -89,10 +87,24 @@ def tts(text, path):
     return len(audio)
 
 
-manifest, fails = {}, []
+# If a run stops part way (credits run out), texts not yet re-recorded keep their old clip.
+try:
+    old = json.load(open(os.path.join(OUT_DIR, "manifest.json"), encoding="utf-8"))
+except Exception:
+    old = {}
+
+def keep_old(text):
+    if old.get(text) and os.path.exists(os.path.join(OUT_DIR, old[text])):
+        manifest[text] = old[text]
+    else:
+        fails.append(text)
+
+manifest, fails, stopped = {}, [], None
 for i, (text, spoken) in enumerate(words, 1):
-    # Voice is part of the hash so switching VOICE_ID regenerates everything.
-    fname = hashlib.md5(f"{vid}|{spoken}".encode("utf-8")).hexdigest()[:16] + ".mp3"
+    if stopped:
+        keep_old(text); continue
+    # Voice and model are part of the hash so switching either regenerates everything.
+    fname = hashlib.md5(f"{vid}|{MODEL}|{spoken}".encode("utf-8")).hexdigest()[:16] + ".mp3"
     path = os.path.join(OUT_DIR, fname)
     manifest[text] = fname
     if os.path.exists(path) and os.path.getsize(path) > 0:
@@ -106,14 +118,16 @@ for i, (text, spoken) in enumerate(words, 1):
         except urllib.error.HTTPError as e:
             msg = e.read().decode("utf-8", "replace")[:200]
             print(f"  [{i:2}/{len(words)}] HTTP {e.code} attempt {attempt+1}: {msg}")
-            if e.code in (401, 403):
-                sys.exit("Auth failed — check the API key.")
+            if e.code in (401, 402, 403):
+                stopped = msg; break
             time.sleep(3 * (attempt + 1))
         except Exception as e:
             print(f"  [{i:2}/{len(words)}] err attempt {attempt+1}: {e}")
             time.sleep(3 * (attempt + 1))
     else:
-        del manifest[text]; fails.append(text)
+        del manifest[text]; keep_old(text); continue
+    if stopped:
+        del manifest[text]; keep_old(text)
 
 with open(os.path.join(OUT_DIR, "manifest.json"), "w", encoding="utf-8") as f:
     json.dump(manifest, f, ensure_ascii=False, indent=1)
@@ -125,3 +139,5 @@ for f in stale:
     os.remove(os.path.join(OUT_DIR, f))
 
 print(f"\nDone. {len(manifest)} clips. Removed {len(stale)} stale. Failures: {fails or 'none'}")
+if stopped:
+    print(f"STOPPED EARLY (old clips kept for the rest): {stopped}")
