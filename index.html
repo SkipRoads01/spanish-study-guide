@@ -301,8 +301,13 @@
   .spell input.wrong { border-color: var(--bad); background: var(--bad-soft); }
   .spell .btn { height: 52px; }
   .accents { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
-  .accents button { width: 38px; height: 34px; border-radius: 8px; background: var(--surface-2); font-size: 16px; }
-  .accents button:hover { background: var(--accent-soft); color: var(--accent); }
+  .accents button {
+    width: 40px; height: 38px; border-radius: 9px; font-size: 17px; font-weight: 500; color: var(--text);
+    background: var(--surface); border: 1px solid var(--border); box-shadow: 0 2px 0 var(--border);
+    transition: background .15s, color .15s, border-color .15s;
+  }
+  .accents button:hover { background: var(--accent-soft); border-color: var(--accent); color: var(--accent); box-shadow: 0 2px 0 var(--accent); }
+  .accents button:active { transform: translateY(2px); box-shadow: none; }
   .feedback { min-height: 28px; margin: 16px 0 6px; font-weight: 500; }
   .feedback.ok { color: var(--ok); }
   .feedback.bad { color: var(--bad); }
