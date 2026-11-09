@@ -1291,13 +1291,14 @@ function quizSetup() {
       <button class="btn primary" data-q="start">Start · ${Math.min(10, deckWords(deck).length)} questions</button>
     </div>`;
 }
+const withArt = w => w.art ? `${w.art} ${w.es}` : w.es;
 function quizStart() {
   const types = ['es-en', 'en-es', 'listen', 'spell'];
   qz.qs = shuffle(deckWords(deck)).slice(0, 10).map(w => {
     const type = qz.mode === 'mixed' ? types[Math.floor(Math.random() * types.length)] : qz.mode;
     let opts = null;
     if (type !== 'spell') {
-      const show = type === 'en-es' ? (x => x.es) : primary;
+      const show = type === 'en-es' ? withArt : primary;
       const pool = shuffle(ALL.filter(x => x.es !== w.es && show(x) !== show(w)));
       const picks = [];
       for (const x of pool) { if (picks.length === 3) break; if (!picks.some(p => show(p) === show(x))) picks.push(x); }
@@ -1313,7 +1314,7 @@ function quizRender() {
   qz.answered = false;
   const label = { 'es-en': 'What does this mean?', 'en-es': 'How do you say…', 'listen': 'What did you hear?', 'spell': 'Type it in Spanish' }[q.type];
   let prompt;
-  if (q.type === 'es-en') prompt = `${sayBtn(q.w.es)}<div class="fc-big">${q.w.es}</div>`;
+  if (q.type === 'es-en') prompt = `${sayBtn(q.w.es)}<div class="fc-big">${q.w.art ? `<span class="art">${q.w.art}</span>` : ''}${q.w.es}</div>`;
   else if (q.type === 'listen') prompt = `<button class="q-play" data-say="${esc(q.w.es)}" aria-label="Play">${ICON.play}</button>`;
   else prompt = `<div class="fc-mid">${primary(q.w)}</div>`;
   const answer = q.type === 'spell'
@@ -1338,7 +1339,7 @@ function quizAnswer(correct, note) {
   fb.className = 'feedback ' + (correct ? 'ok' : 'bad');
   fb.innerHTML = correct
     ? (note || '¡Correcto!')
-    : `${q.w.es} — ${primary(q.w)}`;
+    : `${withArt(q.w)} — ${primary(q.w)}`;
   speak(q.w.es);
   $('#q-next').hidden = false;
   $('#q-next').focus();
@@ -1358,13 +1359,13 @@ function quizSpell() {
   if (qz.answered) return;
   const q = qz.qs[qz.i];
   const input = $('#q-input');
-  const typed = input.value.trim();
+  const typed = input.value.trim().replace(/^(el|la|los|las)\s+/i, '');
   if (!typed) return;
   const exact = typed.toLowerCase().replace(/[¿?¡!.,]/g, '').trim() === q.w.es.toLowerCase().replace(/[¿?¡!.,]/g, '').trim();
   const close = clean(typed) === clean(q.w.es);
   input.disabled = true;
   input.classList.add(close ? 'correct' : 'wrong');
-  quizAnswer(close, exact ? null : `Almost — watch the accents: <strong>${q.w.es}</strong>`);
+  quizAnswer(close, exact ? null : `Almost — watch the accents: <strong>${withArt(q.w)}</strong>`);
 }
 function quizNext() {
   qz.i++;
@@ -1374,7 +1375,7 @@ function quizNext() {
     <div class="result panel">
       <div class="score">${qz.score}/${qz.qs.length}</div>
       <div class="of">${pct === 1 ? '¡Perfecto!' : pct >= .7 ? '¡Muy bien!' : 'Sigue practicando'}</div>
-      ${qz.missed.length ? `<ul class="missed">${qz.missed.map(w => `<li><span>${w.es}</span><span>${primary(w)}</span></li>`).join('')}</ul>` : ''}
+      ${qz.missed.length ? `<ul class="missed">${qz.missed.map(w => `<li><span>${withArt(w)}</span><span>${primary(w)}</span></li>`).join('')}</ul>` : ''}
       <div class="lesson-actions" style="justify-content:center">
         <button class="btn primary" data-q="start">Again</button>
         <button class="btn" data-q="setup">Change quiz</button>
