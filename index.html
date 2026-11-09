@@ -656,6 +656,13 @@ const LESSONS = [
     notes: [
       ['De mi vida actual me gusta mi cambio de profesión y los nuevos retos que ello supone.', 'What I like about my life now is my career change and the new challenges it brings.'],
     ],
+    homework: {
+      title: 'Everyday routines — ProfeDeELE exercises', url: 'https://www.profedeele.es/actividad/acciones-habituales/',
+      tasks: [
+        'Exercise 3: complete José’s daily routine, using the picture and the audio',
+        'Exercise 6: compare Yahaira’s and Lucía’s routines and weekends',
+      ],
+    },
     materials: [],
   },
 ];
@@ -1148,6 +1155,7 @@ window.addEventListener('hashchange', () => go(location.hash.slice(1)));
 /* ── Plan ── */
 const weekOf = d => Math.floor((new Date(d + 'T12:00') - new Date(PLAN_START + 'T12:00')) / 864e5 / 7) + 1;
 let challenges = new Set(store.get('es.challenges', []));
+let homework = new Set(store.get('es.homework', []));
 let planStage = null;
 function renderPlan() {
   const live = weekOf(dayKey(new Date()));
@@ -1194,6 +1202,8 @@ function renderLessons() {
         <div><div class="eyebrow">Lección ${l.n} · Week ${weekOf(l.date)}</div><h3>${l.title}</h3><div class="meta">${fmtDate(l.date)} · ${l.minutes} min</div></div>
         <div class="ring" style="--p:${done / ws.length}" title="${done} of ${ws.length} learned"><span>${done}/${ws.length}</span></div>
       </div>
+      ${l.homework ? `<div class="lesson-block"><div class="label">Homework</div><div class="link-list"><a class="link-row" href="${l.homework.url}" target="_blank" rel="noopener">${ICON.out}<span>${l.homework.title}</span></a></div>
+        ${l.homework.tasks.map((t, i) => `<button class="habit" data-hw="${l.id}:${i}" aria-pressed="${homework.has(l.id + ':' + i)}"><span class="check">${ICON.check}</span><span>${t}</span></button>`).join('')}</div>` : ''}
       ${words.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><div class="chips">${chips(words)}</div></div>` : ''}
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
       ${natural.length ? `<div class="lesson-block"><div class="label">Natural</div><div class="chips">${chips(natural)}</div></div>` : ''}
@@ -1529,6 +1539,7 @@ document.addEventListener('click', e => {
   }
   if (d.habit !== undefined) return toggleHabit(+d.habit);
   if (d.challenge !== undefined) return toggleChallenge(+d.challenge);
+  if (d.hw) { homework.has(d.hw) ? homework.delete(d.hw) : homework.add(d.hw); store.set('es.homework', [...homework]); return renderLessons(); }
   if (d.stage !== undefined) { planStage = +d.stage; return renderPlan(); }
   if (d.lesson) { e.preventDefault(); $('#lesson-' + d.lesson).scrollIntoView({ behavior: 'smooth', block: 'start' }); return; }
 });
