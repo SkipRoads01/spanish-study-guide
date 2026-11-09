@@ -322,6 +322,7 @@
 
   /* ── Grammar ── */
   .gitem { margin-bottom: 12px; overflow: hidden; }
+  h2.first { margin-top: 0; }
   .gitem summary {
     list-style: none; cursor: pointer; padding: 18px 20px;
     display: flex; align-items: center; gap: 14px;
@@ -403,7 +404,7 @@
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
       border-top: 1px solid var(--border);
     }
-    .tab { flex-direction: column; gap: 3px; padding: 6px 0; font-size: 10px; flex: 1; min-width: 0; white-space: nowrap; border-radius: 10px; }
+    .tab { flex-direction: column; gap: 3px; padding: 6px 0; font-size: 10px; letter-spacing: -0.02em; flex: 1; min-width: 0; white-space: nowrap; border-radius: 10px; }
     .tab .long { display: none; }
     .tab .short { display: inline; }
     .tab svg { display: block; }
@@ -441,6 +442,9 @@
       <a class="tab" href="#natural" data-tab="natural">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"/><path d="M8.5 12h.01M12 12h.01M15.5 12h.01"/></svg>
         Natural</a>
+      <a class="tab" href="#verbs" data-tab="verbs">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M13 3 5 13.5h6L10 21l8-10.5h-6L13 3Z"/></svg>
+        Verbs</a>
       <a class="tab" href="#grammar" data-tab="grammar">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V5h16v2M9 19h6M12 5v14"/></svg>
         Grammar</a>
@@ -516,6 +520,15 @@
   </section>
 
   <!-- Grammar -->
+  <section class="view" id="view-verbs" hidden>
+    <div class="view-head"><h1>Verbs</h1></div>
+    <h2 class="first">Tenses</h2>
+    <div id="vb-tenses"></div>
+    <h2>Verbs like gustar</h2>
+    <div id="vb-like"></div>
+    <h2>All verbs</h2>
+    <ul class="vlist panel" id="vb-list"></ul>
+  </section>
   <section class="view" id="view-grammar" hidden>
     <div class="view-head"><h1>Grammar</h1></div>
     <div id="g-list"></div>
@@ -682,7 +695,7 @@ const SETS = [
 
 const GRAMMAR = [
   {
-    id: 'presente', es: 'El presente', en: 'Present tense',
+    id: 'presente', verbs: 'tense', es: 'El presente', en: 'Present tense',
     rule: 'Drop <strong>-ar</strong>, <strong>-er</strong> or <strong>-ir</strong> and add the ending for the person. The ending shows who, so <em>yo</em>, <em>tú</em>, etc. are usually left out.',
     tables: [{
       head: ['Regular', 'hablar', 'comer', 'vivir'],
@@ -794,7 +807,7 @@ const GRAMMAR = [
     ],
   },
   {
-    id: 'preterito', es: 'Uso de pretérito para expresar acciones pasadas', en: 'Preterite for past actions',
+    id: 'preterito', verbs: 'tense', es: 'El pretérito', en: 'Preterite: finished past actions',
     rule: 'Use the preterite for finished actions at a specific time: <em>ayer, el sábado, en 2019, el año pasado</em>.',
     tables: [{
       head: ['Regular', 'trabajar', 'aprender', 'vivir'],
@@ -861,7 +874,7 @@ const GRAMMAR = [
     ],
   },
   {
-    id: 'perifrasis', es: 'Uso de perífrasis para planes futuros o intención', en: 'Phrases for future plans and intention',
+    id: 'perifrasis', verbs: 'tense', es: 'Ir a + infinitivo', en: 'Going to: plans and intentions',
     rule: '<strong>ir a</strong> + infinitive is the everyday way to talk about plans. <strong>pensar</strong>, <strong>querer</strong> and <strong>tener que</strong> + infinitive add intention, desire or obligation.',
     table: {
       head: ['', 'ir a + infinitive<small>to be going to</small>'],
@@ -904,7 +917,7 @@ const GRAMMAR = [
     ],
   },
   {
-    id: 'futuro', es: 'Futuro simple', en: 'Simple future',
+    id: 'futuro', verbs: 'tense', es: 'Futuro simple', en: 'Simple future',
     rule: 'Add <strong>-é, -ás, -á, -emos, -án</strong> to the whole infinitive. For everyday plans, <em>ir a</em> + infinitive is more common.',
     tables: [{
       head: ['Regular', 'hablar', 'comer', 'vivir'],
@@ -933,7 +946,7 @@ const GRAMMAR = [
     ],
   },
   {
-    id: 'gustar', es: 'Gustar y pronombres', en: 'Gustar: saying what people like',
+    id: 'gustar', verbs: 'like', es: 'Gustar y pronombres', en: 'Gustar: saying what people like',
     rule: 'The thing liked is the subject: <strong>gusta</strong> + one thing or a verb, <strong>gustan</strong> + plural. The pronoun says who likes it, and <strong>a</strong> + name or person makes it clear.',
     tables: [{
       head: ['Who likes it', 'gustar'],
@@ -954,7 +967,7 @@ const GRAMMAR = [
     ],
   },
   {
-    id: 'irbien', es: 'Ir bien', en: 'Ir bien: how things are going',
+    id: 'irbien', verbs: 'like', es: 'Ir bien', en: 'Ir bien: how things are going',
     rule: 'Works like <strong>gustar</strong>: the pronoun says who it’s going well for, and <strong>va</strong> stays the same.',
     examples: [
       ['¿Cómo te va?', 'How’s it going?'],
@@ -1061,7 +1074,7 @@ function toggleBook(es) {
   store.set('es.book', [...book]);
   const drilling = deck === 'book';
   if (!book.size) { if (vFilter === 'book') vFilter = 'all'; if (deck === 'book') deck = 'all'; }
-  renderVocabFilters(); renderVocab(); renderBook(); renderNatural();
+  renderVocabFilters(); renderVocab(); renderBook(); renderNatural(); renderVerbList();
   if (current === 'cards') {
     if (drilling && !book.has(es)) {
       if (!book.size) return fcBuild();
@@ -1075,7 +1088,7 @@ function toggleBook(es) {
 function toggleLearned(es) {
   learned.has(es) ? learned.delete(es) : learned.add(es);
   store.set('es.learned', [...learned]);
-  renderLessons(); renderVocab(); renderBook(); renderNatural(); renderStats();
+  renderLessons(); renderVocab(); renderBook(); renderNatural(); renderVerbList(); renderStats();
 }
 
 /* ── Speech ── recorded clips (generate_audio.py), browser voice only for text without a clip yet */
@@ -1108,7 +1121,7 @@ function speak(text) {
 const sayBtn = (text, label = 'Listen') => `<button class="icon-btn" data-say="${esc(text)}" aria-label="${label}">${ICON.speak}</button>`;
 
 /* ── Routing ── */
-const TABS = ['lessons', 'vocab', 'natural', 'cards', 'book', 'quiz', 'grammar', 'practice'];
+const TABS = ['lessons', 'vocab', 'natural', 'verbs', 'cards', 'book', 'quiz', 'grammar', 'practice'];
 let current = null;
 function go(tab) {
   if (!TABS.includes(tab)) tab = 'lessons';
@@ -1173,7 +1186,7 @@ function renderLessons() {
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
       ${natural.length ? `<div class="lesson-block"><div class="label">Natural</div><div class="chips">${chips(natural)}</div></div>` : ''}
       ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([said, fix, why]) => `<li><s>${said}</s><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
-      ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="#grammar" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
+      ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="${g.verbs ? '#verbs' : '#grammar'}" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
       ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${/^https?:/.test(m.file) ? ICON.out : ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
       <div class="lesson-actions">
         <button class="btn primary" data-study="${l.id}">Flashcards</button>
@@ -1416,7 +1429,7 @@ function verbMeaning(head) {
   return `<small>${parts.map(primary).join(' / ')}</small>`;
 }
 function renderGrammar() {
-  $('#g-list').innerHTML = GRAMMAR.map(g => `
+  const item = g => `
     <details class="gitem panel" id="g-${g.id}">
       <summary><div class="gt"><b>${g.en}</b><span>${g.es}</span></div>${ICON.chev}</summary>
       <div class="gbody">
@@ -1426,7 +1439,14 @@ function renderGrammar() {
         ${g.note ? `<div class="rule">${g.note}</div>` : ''}
         <ul class="ex">${g.examples.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div></li>`).join('')}</ul>
       </div>
-    </details>`).join('');
+    </details>`;
+  $('#g-list').innerHTML = GRAMMAR.filter(g => !g.verbs).map(item).join('');
+  $('#vb-tenses').innerHTML = GRAMMAR.filter(g => g.verbs === 'tense').map(item).join('');
+  $('#vb-like').innerHTML = GRAMMAR.filter(g => g.verbs === 'like').map(item).join('');
+  renderVerbList();
+}
+function renderVerbList() {
+  $('#vb-list').innerHTML = ALL.filter(w => w.pos === 'verb').sort((a, b) => a.es.localeCompare(b.es, 'es')).map(w => vocabRow({ ...w, pos: '' })).join('');
 }
 
 /* ── Practice ── */
