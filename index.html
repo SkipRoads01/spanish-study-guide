@@ -646,6 +646,18 @@ const LESSONS = [
       { title: 'Expressing likes with gustar — ProfeDeELE, a site of free Spanish lessons', file: 'https://www.profedeele.es/funciones/expresar-gustos/' },
     ],
   },
+  {
+    id: 'l3', n: 3, date: '2026-11-09', minutes: 60, title: 'Mi vida actual',
+    words: [
+      { es: 'cambio de profesión', art: 'el', en: 'career change' },
+      { es: 'retos', art: 'los', en: 'challenges' },
+      { es: 'suponer', pos: 'verb', en: 'to involve; to mean; to suppose' },
+    ],
+    notes: [
+      ['De mi vida actual me gusta mi cambio de profesión y los nuevos retos que ello supone.', 'What I like about my life now is my career change and the new challenges it brings.'],
+    ],
+    materials: [],
+  },
 ];
 
 // Reference sets that aren't tied to a lesson; they appear as their own deck.
@@ -1185,6 +1197,7 @@ function renderLessons() {
       ${words.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><div class="chips">${chips(words)}</div></div>` : ''}
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
       ${natural.length ? `<div class="lesson-block"><div class="label">Natural</div><div class="chips">${chips(natural)}</div></div>` : ''}
+      ${(l.notes || []).length ? `<div class="lesson-block"><div class="label">Notes</div><ul class="ex">${l.notes.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div></li>`).join('')}</ul></div>` : ''}
       ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([said, fix, why]) => `<li><s>${said}</s><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
       ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="${g.verbs ? '#verbs' : '#grammar'}" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
       ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${/^https?:/.test(m.file) ? ICON.out : ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
