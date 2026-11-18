@@ -8,6 +8,7 @@ Single-page static site (`index.html`), built from the user's weekly one-hour iT
 - GRAMMAR entries with `verbs: 'tense' | 'inf' | 'reflexive' | 'like'` (tenses, verb + infinitive, reflexive, verbs like gustar) show on the Verbs page instead of Grammar; Verbs also lists every verb. Words with `natural: true` (phrasing the tutor flags as natural) show on the Natural page.
 - Lessons can have `notes: [[spanish, english]]` (things the tutor writes down in class, with audio).
 - Lessons can have `homework: { title, url, tasks: [...] }`; tasks are checkboxes saved in `es.homework`.
+- `REMINDER` is the homework banner at the top of every page: `tasks: [{ t, url }]`, checkboxes saved in `es.homework` as `due:<index>` (append new tasks rather than reorder, or saved checks shift). Hidden when `tasks` is empty.
 - Lessons can have `corrections: [[what I said, correct version, short note]]`; the correct version gets audio.
 - Source for each lesson: iTalki's AI lesson summary (vocabulary, expressions, grammar, error corrections) on the lesson's page, read in the built-in browser panel (the user signs in there; Claude in Chrome hasn't connected). Spanish lessons only (teacher: Profesora Gisela), usually Mondays 9:00, 60 min (sometimes moved). Summary URL: https://www.italki.com/en/mylessonsummary?role=student&lid=<lesson id>; the lesson page also lists links the tutor shared. Ignore the Mandarin/Macedonian lessons in the same account.
 - Tutor PDFs go in `materials/` and are linked from the lesson's `materials`.
