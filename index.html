@@ -524,6 +524,8 @@
     <div class="view-head"><h1>Verbs</h1></div>
     <h2 class="first">Tenses</h2>
     <div id="vb-tenses"></div>
+    <h2>Verb + infinitive</h2>
+    <div id="vb-inf"></div>
     <h2>Reflexive verbs</h2>
     <div id="vb-reflexive"></div>
     <h2>Verbs like gustar</h2>
@@ -697,6 +699,49 @@ const LESSONS = [
       ],
     },
     materials: [],
+  },
+  {
+    id: 'l4', n: 4, date: '2026-11-17', minutes: 60, title: 'Mi rutina diaria',
+    words: [
+      { es: 'psicoterapia', art: 'la', en: 'psychotherapy' },
+      { es: 'fisioterapia', art: 'la', en: 'physiotherapy' },
+      { es: 'beca', art: 'la', en: 'scholarship' },
+      { es: 'pasantía', art: 'la', en: 'internship' },
+      { es: 'estancia', art: 'la', en: 'stay; room' },
+      { es: 'promedio', art: 'el', en: 'average' },
+      { es: 'pausa', art: 'la', en: 'break; pause' },
+      { es: 'perro', art: 'el', en: 'dog' },
+      { es: 'basura', art: 'la', en: 'trash; garbage' },
+      { es: 'ducharse', pos: 'verb', en: 'to take a shower' },
+      { es: 'acostarse', pos: 'verb', irr: true, en: 'to go to bed' },
+      { es: 'almorzar', pos: 'verb', irr: true, en: 'to have lunch' },
+      { es: 'cenar', pos: 'verb', en: 'to have dinner' },
+      { es: 'cocinar', pos: 'verb', en: 'to cook' },
+      { es: 'limpiar', pos: 'verb', en: 'to clean' },
+      { es: 'sacar', pos: 'verb', en: 'to take out; to get' },
+      { es: 'pasear', pos: 'verb', en: 'to go for a walk; to walk (a dog)' },
+      { es: 'tirar', pos: 'verb', en: 'to throw; to throw away' },
+      { es: 'soler', pos: 'verb', irr: true, en: 'to usually (do)' },
+      { es: 'nada más levantarme', kind: 'phrase', en: 'as soon as I get up' },
+      { es: 'antes de ir a trabajar', kind: 'phrase', en: 'before going to work' },
+      { es: 'justo a tiempo', kind: 'phrase', en: 'just in time' },
+      { es: 'le doy la comida a mi perro', kind: 'phrase', en: 'I feed my dog' },
+      { es: 'saco al perro a pasear', kind: 'phrase', en: 'I take the dog out for a walk' },
+      { es: 'paseo al perro', kind: 'phrase', en: 'I walk the dog' },
+      { es: 'tiro la basura', kind: 'phrase', en: 'I take out the trash' },
+      { es: 'me acuesto a las diez, pero leo hasta las doce', kind: 'phrase', en: 'I go to bed at ten, but I read until twelve' },
+    ],
+    grammar: ['reflexivos', 'soler', 'horas', 'momentos', 'infinitivo', 'tenerque', 'perifrasis', 'terminarde'],
+    corrections: [
+      ['Un poco, un poco cantado.', 'Un poco, un poco cansado.', 'cansado = tired. Cantado means “sung”.'],
+      ['Dar comida de mi quiero.', 'Le doy comida a mi perro.', 'dar → doy; le … a + who gets it.'],
+      ['Después tiro a la basura.', 'Después tiro la basura.', 'tirar la basura = take out the trash.'],
+      ['Me acuesto hasta las 12.', 'Me acuesto a las diez, pero leo hasta las doce.', 'a las = at; hasta las = until.'],
+      ['Saco quiero pasear.', 'Saco al perro a pasear.', 'sacar al perro a pasear = take the dog for a walk.'],
+    ],
+    materials: [
+      { title: 'An introduction to psychotherapy, in Spanish — Columbia Psychiatry (YouTube)', file: 'https://www.youtube.com/watch?v=QAHYyQpByw4' },
+    ],
   },
 ];
 
@@ -1083,6 +1128,58 @@ const GRAMMAR = [
       ['¿A qué hora te levantas?', 'What time do you get up?'],
       ['Tengo que levantarme a las seis.', 'I have to get up at six.'],
       ['Mis hijas se levantan tarde los sábados.', 'My daughters get up late on Saturdays.'],
+      ['Me ducho nada más levantarme.', 'I shower as soon as I get up.'],
+      ['Me acuesto a las diez.', 'I go to bed at ten.'],
+    ],
+  },
+  {
+    id: 'soler', verbs: 'inf', es: 'Soler + infinitivo', en: 'Soler: what you usually do',
+    rule: '<strong>Soler</strong> + infinitive = “usually”. It changes o → ue: <em>suelo, sueles, suele, solemos, suelen</em>.',
+    examples: [
+      ['Suelo desayunar a las siete.', 'I usually have breakfast at seven.'],
+      ['Suelo leer antes de dormir.', 'I usually read before going to sleep.'],
+      ['¿A qué hora sueles cenar?', 'What time do you usually have dinner?'],
+      ['Mis hijas suelen levantarse tarde.', 'My daughters usually get up late.'],
+    ],
+  },
+  {
+    id: 'tenerque', verbs: 'inf', es: 'Tener que + infinitivo', en: 'Tener que: what you have to do',
+    rule: '<strong>Tener que</strong> + infinitive = “have to”. Only <em>tener</em> changes: <em>tengo que, tienes que, tiene que…</em>',
+    examples: [
+      ['Tengo que levantarme temprano.', 'I have to get up early.'],
+      ['Tengo que sacar al perro.', 'I have to take the dog out.'],
+      ['¿Tienes que trabajar mañana?', 'Do you have to work tomorrow?'],
+      ['Hoy tenemos que limpiar la cocina.', 'Today we have to clean the kitchen.'],
+    ],
+  },
+  {
+    id: 'terminarde', verbs: 'inf', es: 'Terminar de / acabar de + infinitivo', en: 'Terminar de, acabar de: finishing and “just did”',
+    rule: '<strong>Terminar de</strong> + infinitive = finish doing. <strong>Acabar de</strong> + infinitive = have just done.',
+    examples: [
+      ['Termino de trabajar a las cinco.', 'I finish work at five.'],
+      ['Cuando termino de cenar, paseo al perro.', 'When I finish dinner, I walk the dog.'],
+      ['Acabo de llegar a casa.', 'I’ve just got home.'],
+      ['Acabo de terminar el libro.', 'I’ve just finished the book.'],
+    ],
+  },
+  {
+    id: 'infinitivo', es: 'Preposición + infinitivo', en: 'After a preposition: the infinitive',
+    rule: 'After <strong>antes de, después de, para, sin</strong>, Spanish uses the infinitive where English uses -ing. Reflexive verbs keep the pronoun on the end: <em>antes de ducharme</em>.',
+    examples: [
+      ['Desayuno antes de ir a trabajar.', 'I have breakfast before going to work.'],
+      ['Después de cenar, me gusta pasear.', 'After dinner, I like to go for a walk.'],
+      ['Nada más levantarme, me ducho.', 'As soon as I get up, I shower.'],
+      ['Salió sin decir adiós.', 'He left without saying goodbye.'],
+    ],
+  },
+  {
+    id: 'horas', es: 'A las, sobre las, hasta las', en: 'Times: at, around, until',
+    rule: '<strong>a las</strong> + time = at; <strong>sobre las</strong> = around; <strong>hasta las</strong> = until; <strong>de … a …</strong> = from … to. One o’clock is singular: <em>a la una</em>.',
+    examples: [
+      ['Me acuesto a las diez, pero leo hasta las doce.', 'I go to bed at ten, but I read until twelve.'],
+      ['Almuerzo sobre la una.', 'I have lunch around one.'],
+      ['Trabajo de nueve a cinco.', 'I work from nine to five.'],
+      ['Llego a casa sobre las seis.', 'I get home around six.'],
     ],
   },
   {
@@ -1597,6 +1694,7 @@ function renderGrammar() {
   $('#g-list').innerHTML = GRAMMAR.filter(g => !g.verbs).map(item).join('');
   const order = ['presente', 'continuo', 'perfecto', 'preterito', 'perifrasis', 'futuro'];
   $('#vb-tenses').innerHTML = GRAMMAR.filter(g => g.verbs === 'tense').sort((x, y) => order.indexOf(x.id) - order.indexOf(y.id)).map(item).join('');
+  $('#vb-inf').innerHTML = GRAMMAR.filter(g => g.verbs === 'inf').map(item).join('');
   $('#vb-reflexive').innerHTML = GRAMMAR.filter(g => g.verbs === 'reflexive').map(item).join('');
   $('#vb-like').innerHTML = GRAMMAR.filter(g => g.verbs === 'like').map(item).join('');
   renderVerbList();
