@@ -187,7 +187,6 @@
   .fixes { list-style: none; }
   .fixes li { display: grid; grid-template-columns: 30px minmax(0, 1fr); column-gap: 8px; padding: 10px 0; border-top: 1px solid var(--border); }
   .fixes li:first-child { border-top: 0; padding-top: 2px; }
-  .fixes s { grid-column: 2; color: var(--muted); font-size: 14px; text-decoration-color: var(--accent); }
   .fixes .fix { display: contents; }
   .fixes .fix .icon-btn { grid-column: 1; width: 30px; height: 30px; }
   .fixes .fix span { grid-column: 2; font-weight: 600; align-self: center; }
@@ -608,7 +607,7 @@ const LESSONS = [
       ['los gentes', 'la gente', 'gente is singular.'],
       ['Mis hijas se gustan nadar.', 'A mis hijas les gusta nadar.', 'gustar takes a + person and les.'],
       ['Hace probablemente 10 años pasado por la viaje aventura.', 'Hace probablemente diez años que fui de viaje de aventura.', 'hace + time + que + preterite.'],
-      ['Jugo béisbol y mis amigos hablan español en la liga.', 'Juego béisbol y mis amigos hablan español en la liga.', 'jugar → juego. Jugo is juice.'],
+      ['Jugo béisbol y mis amigos hablan español en la liga.', 'Juego béisbol y mis amigos hablan español en la liga.', 'jugar → juego (I play).'],
     ],
     materials: [
       { title: 'Importance of immersion at home', file: 'materials/immersion-at-home.pdf' },
@@ -696,7 +695,7 @@ const LESSONS = [
     ],
     grammar: ['tiempo', 'gustar', 'momentos', 'reflexivos', 'continuo', 'perfecto', 'comparativos'],
     corrections: [
-      ['Hace poco de frío.', 'Hace un poco de frío.', 'un poco = a little. Poco alone means “not much”.'],
+      ['Hace poco de frío.', 'Hace un poco de frío.', 'un poco de = a little.'],
       ['Me gusta las películas españolas.', 'Me gustan las películas españolas.', 'Plural thing liked → gustan.'],
       ['Mis hijas les gustan.', 'A mis hijas les gusta.', 'a + person; gusta agrees with the thing liked.'],
       ['Me gustan chino, español e inglés.', 'Me gustan el chino, el español y el inglés.', 'Languages take el after gustar.'],
@@ -707,10 +706,10 @@ const LESSONS = [
       ['Por la tarde.', 'Roll the r in por.'],
       ['A mí me gusta. A él le gusta.', 'a mí / a él go with gustar.'],
       ['Él lee un libro.', 'lee: leer, third person.'],
-      ['Juego al béisbol.', 'juego, not jugo (juice).'],
+      ['Juego al béisbol.', 'juego: I play (jugar).'],
       ['Les va muy bien, la verdad.', 'They’re doing very well, honestly.'],
       ['¿A qué te dedicas?', 'What do you do? (dedicarse)'],
-      ['Hace un poco de frío. Está nublado.', 'un poco de frío. Nublado (cloudy), not nublar (to cloud over).'],
+      ['Hace un poco de frío. Está nublado.', 'It’s a little cold. It’s cloudy.'],
       ['Me gusta muchísimo.', 'muchísimo: more than mucho.'],
       ['Películas.', 'pe-LÍ-cu-las.'],
       ['¿Cómo te va? ¿Cómo le va?', 'tú → usted: te becomes le.'],
@@ -758,7 +757,7 @@ const LESSONS = [
     ],
     grammar: ['reflexivos', 'soler', 'horas', 'momentos', 'infinitivo', 'tenerque', 'perifrasis', 'terminarde'],
     corrections: [
-      ['Un poco, un poco cantado.', 'Un poco, un poco cansado.', 'cansado = tired. Cantado means “sung”.'],
+      ['Un poco, un poco cantado.', 'Un poco, un poco cansado.', 'cansado = tired.'],
       ['Dar comida de mi quiero.', 'Le doy comida a mi perro.', 'dar → doy; le … a + who gets it.'],
       ['Después tiro a la basura.', 'Después tiro la basura.', 'tirar la basura = take out the trash.'],
       ['Me acuesto hasta las 12.', 'Me acuesto a las diez, pero leo hasta las doce.', 'a las = at; hasta las = until.'],
@@ -1478,7 +1477,7 @@ function renderLessons() {
       ${phrases.length ? `<div class="lesson-block"><div class="label">Expressions</div><div class="chips">${chips(phrases)}</div></div>` : ''}
       ${natural.length ? `<div class="lesson-block"><div class="label">Natural</div><div class="chips">${chips(natural)}</div></div>` : ''}
       ${(l.notes || []).length ? `<div class="lesson-block"><div class="label">Notes</div><ul class="ex">${l.notes.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div></li>`).join('')}</ul></div>` : ''}
-      ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([said, fix, why]) => `<li><s>${said}</s><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
+      ${(l.corrections || []).length ? `<div class="lesson-block"><div class="label">Corrections</div><ul class="fixes">${l.corrections.map(([, fix, why]) => `<li><div class="fix">${sayBtn(fix)}<span>${fix}</span></div><small>${why}</small></li>`).join('')}</ul></div>` : ''}
       ${gram.length ? `<div class="lesson-block"><div class="label">Grammar</div><div class="link-list">${gram.map(g => `<a class="link-row" href="${g.verbs ? '#verbs' : '#grammar'}" data-open="${g.id}">${ICON.next}<span>${g.en}</span></a>`).join('')}</div></div>` : ''}
       ${l.materials.length ? `<div class="lesson-block"><div class="label">Materials</div><div class="link-list">${l.materials.map(m => `<a class="link-row" href="${m.file}" target="_blank" rel="noopener">${/^https?:/.test(m.file) ? ICON.out : ICON.doc}<span>${m.title}</span></a>`).join('')}</div></div>` : ''}
       <div class="lesson-actions">
