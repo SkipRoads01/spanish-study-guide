@@ -159,6 +159,10 @@
   .plan-list .lnk { font-size: 13px; color: var(--accent); font-weight: 600; margin-left: 8px; text-decoration: none; }
   .plan-list .lnk:hover { text-decoration: underline; }
   .plan .label { font-size: 13px; color: var(--muted); margin: 14px 0 0; }
+  .ex-note { display: block; color: var(--muted); font-size: 13px; margin-top: 2px; }
+  .ex .art { color: var(--muted); font-weight: 400; }
+  .notes-list { margin: 0; padding-left: 18px; color: var(--text); font-size: 15px; line-height: 1.5; }
+  .notes-list li + li { margin-top: 4px; }
   .lesson-head { display: flex; justify-content: space-between; align-items: start; gap: 16px; }
   .eyebrow { color: var(--accent); font-size: 13px; font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
   .lesson h3 { font-family: Fraunces, Georgia, serif; font-size: 24px; font-weight: 600; margin: 2px 0 2px; }
@@ -379,6 +383,7 @@
   .reminder .row { display: flex; align-items: center; gap: 8px; border-top: 1px solid var(--border); }
   .reminder .eyebrow + .row { border-top: 0; }
   .reminder .habit { border-top: 0; flex: 1; }
+  @media (max-width: 420px) { .tabs .tab { font-size: 9px; letter-spacing: -0.03em; } .tabs .tab svg { width: 20px; height: 20px; } }
   @media (max-width: 640px) { .reminder { padding: 0 16px; margin-top: 16px; } }
   .repeat { list-style: none; padding: 6px 18px; margin-bottom: 8px; }
   .repeat li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
@@ -402,7 +407,8 @@
   .task p { color: var(--muted); font-size: 14px; }
 
   /* ── Mobile ── */
-  @media (max-width: 720px) {
+  @media (max-width: 1140px) { .tab { padding: 6px 8px; font-size: 13px; } }
+  @media (max-width: 900px) {
     /* backdrop-filter would make the header the containing block for the fixed tab bar */
     .topbar { backdrop-filter: none; -webkit-backdrop-filter: none; background: var(--bg); }
     .topbar-inner { padding: 12px 16px; }
@@ -470,6 +476,9 @@
       <a class="tab" href="#quiz" data-tab="quiz">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.6.3-1 .9-1 1.6v.6M12 17h.01"/></svg>
         Quiz</a>
+      <a class="tab" href="#reading" data-tab="reading">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2 5.5C4.5 4 8 4 12 6c4-2 7.5-2 10-.5V19c-2.5-1.5-6-1.5-10 .5-4-2-7.5-2-10-.5V5.5Z"/><path d="M12 6v13.5"/></svg>
+        Reading</a>
       <a class="tab" href="#practice" data-tab="practice">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h4l3-8 4 16 3-8h4"/></svg>
         Practice</a>
@@ -550,6 +559,12 @@
   <section class="view" id="view-grammar" hidden>
     <div class="view-head"><h1>Grammar</h1></div>
     <div id="g-list"></div>
+  </section>
+
+  <!-- Reading -->
+  <section class="view" id="view-reading" hidden>
+    <div class="view-head"><h1>Reading</h1></div>
+    <div id="r-list"></div>
   </section>
 
   <!-- Practice -->
@@ -886,6 +901,78 @@ const SETS = [
       { es: 'escribir', pos: 'verb', en: 'to write' },
       { es: 'gustar', pos: 'verb', en: 'to like (to be pleasing)' },
       { es: 'llamarse', pos: 'verb', en: 'to be called (me llamo…)' },
+    ],
+  },
+];
+
+// Books the user is reading in Spanish (Reading page). Each book's words join vocabulary,
+// flashcards and the quiz as their own deck; passages get audio.
+// { id: 'b-<slug>', title, author, progress, words: [{ es, en, note }], tables: [{ head, rows }], passages: [[es, en, note]], notes: ['…'] }
+const BOOKS = [
+  {
+    id: 'b-pedro-paramo', title: 'Pedro Páramo', author: 'Juan Rulfo',
+    words: [
+      { es: 'vine', en: 'I came', note: 'Simple past of <em>venir</em>, yo form.' },
+      { es: 'por eso', kind: 'phrase', en: 'that’s why', note: 'Word for word, “for that.” <em>Eso</em> is “that”; <em>esto</em> is “this.”' },
+      { es: 'vendría', en: 'I would come', note: 'Conditional of <em>venir</em>. The yo and él / ella forms are the same.' },
+      { es: 'en un plan de', kind: 'phrase', en: 'in a frame of mind to', note: 'Followed by an infinitive. Colloquial; <em>plan</em> literally means “plan.”' },
+      { es: 'modo', art: 'el', en: 'way; manner', note: '<em>De este modo</em> = in this way, like this.' },
+      { es: 'dará', en: 'he / she / it will give', note: 'Future of <em>dar</em>.' },
+      { es: 'dar gusto', kind: 'phrase', en: 'to please', note: '<em>Le dará gusto</em>: word for word, “it will give him pleasure.”' },
+      { es: 'sino', en: 'but rather; except', note: 'Follows a negative. <em>Pero</em> is the ordinary “but”; <em>si no</em>, two words, is “if not.”' },
+      { es: 'otra cosa', kind: 'phrase', en: 'another thing; anything else', note: 'Singular.' },
+      { es: 'haría', en: 'I would do', note: 'Conditional of <em>hacer</em>. “I would go” is <em>iría</em>.' },
+      { es: 'aún', en: 'still; yet', note: 'Without the accent, <em>aun</em> means “even”: <em>aun después</em> = even after.' },
+      { es: 'comencé', en: 'I began', note: 'Simple past of <em>comenzar</em>, yo form.' },
+      { es: 'llenar', pos: 'verb', en: 'to fill', note: '<em>Llenarme</em> = to fill myself.' },
+      { es: 'dar vuelo a las ilusiones', kind: 'phrase', en: 'to let your hopes take flight', note: 'Word for word, “to give flight to the illusions.”' },
+      { es: 'saponarias', art: 'las', en: 'soapworts', note: 'A flowering plant.' },
+      { es: 'se ve', kind: 'phrase', en: 'looks; appears', note: 'Word for word, “is seen.”' },
+      { es: 'jamás', en: 'never', note: 'Stronger than <em>nunca</em>: “never once.”' },
+      { es: 'rebotado', en: 'bounced', note: 'From <em>rebotar</em>, to bounce.' },
+      { es: 'añadió', en: 'he added', note: 'Simple past of <em>añadir</em>.' },
+      { es: 'gris', en: 'gray' },
+      { es: 'lejanía', art: 'la', en: 'distance; the far-off', note: 'From <em>lejos</em>, far.' },
+      { es: 'trazas', art: 'las', en: 'looks; appearance', note: 'From <em>trazar</em>, to trace or outline.' },
+    ],
+    tables: [{
+      head: ['', 'venir<small>past · came</small>', 'venir<small>conditional · would come</small>', 'dar<small>future · will give</small>', 'hacer<small>conditional · would do</small>'],
+      rows: [
+        ['yo', '<span class="hl">vine</span>', '<span class="hl">vendría</span>', 'daré', '<span class="hl">haría</span>'],
+        ['tú', 'viniste', 'vendrías', 'darás', 'harías'],
+        ['él / ella / usted', 'vino', 'vendría', '<span class="hl">dará</span>', 'haría'],
+        ['nosotros', 'vinimos', 'vendríamos', 'daremos', 'haríamos'],
+        ['ellos / ustedes', 'vinieron', 'vendrían', 'darán', 'harían'],
+      ],
+    }],
+    passages: [
+      ['en cuanto ella muriera', 'as soon as she died', '<em>En cuanto</em> takes the subjunctive when the event is still ahead.'],
+      ['estaba por morirse', 'she was about to die', '<em>Estar por</em> + infinitive: to be about to.'],
+      ['No dejes de ir.', 'Don’t fail to go.', '<em>No dejar de</em> + infinitive: not fail to.'],
+      ['de este modo y de este otro', 'this way and that', '<em>Modo</em> is dropped after <em>otro</em> because it’s understood.'],
+      ['se lo seguí diciendo', 'I kept on saying it to her', '<em>Seguir</em> + gerund: to keep doing. <em>Se lo</em> = it to her.'],
+      ['les costó trabajo zafarse', 'they had trouble pulling free', '<em>Costar trabajo</em>: to be hard. <em>Zafarse</em>: to break free.'],
+      ['cóbraselo caro', 'make him pay dearly for it', '<em>Cobrar</em> + <em>se</em> (him) + <em>lo</em> (it).'],
+      ['Así lo haré.', 'I will.', '<em>Haré</em>: future of <em>hacer</em>, “I will do.”'],
+      ['Por eso vine.', 'That’s why I came.', ''],
+      ['tiempo de la canícula', 'the dog days', '<em>Canícula</em>: the hottest stretch of summer.'],
+      ['el olor podrido', 'the rotten smell', '<em>Podrido</em>: rotten. <em>Envenenado</em>, in the same line: poisoned.'],
+      ['subía y bajaba', 'went up and down', '<em>Subir</em> and <em>bajar</em> in the ongoing past (imperfect).'],
+      ['según se va o se viene', 'depending on whether you’re going or coming', '<em>Según</em>: depending on. <em>Se va</em>: one goes.'],
+      ['se ve esto tan triste', 'this looks so sad', '<em>Se ve</em>: looks. <em>Esto</em>: this.'],
+      ['retazos de suspiros', 'scraps of sighs', '<em>Retazo</em>: scrap, remnant. <em>Suspiro</em>: sigh.'],
+      ['suspirando por', 'sighing for', '<em>Suspirar por</em>: to long for.'],
+      ['casi apagada', 'almost extinguished', '<em>Apagar</em>: to put out, turn off. Of a voice: faint.'],
+      ['Volví a oír', 'I heard again', '<em>Volver a</em> + infinitive: to do again.'],
+      ['Sea usted quien sea', 'whoever you are', '<em>Sea</em>: subjunctive of <em>ser</em>, used twice.'],
+      ['se alegrará de verlo', 'he’ll be glad to see you', '<em>Alegrarse de</em>: to be glad to. <em>Lo</em> = formal “you.”'],
+      ['¿Qué trazas tiene?', 'What does he look like?', 'Word for word, “What looks does he have?”'],
+      ['¿A dónde va usted?', 'Where are you going?', '<em>A dónde</em>: to where. <em>Va</em>: from <em>ir</em>.'],
+      ['en espera de algo', 'waiting for something', '<em>En espera de</em>: awaiting.'],
+    ],
+    notes: [
+      'Conditional endings are the same for every verb: <em>-ía, -ías, -ía, -íamos, -ían</em>. Only the stem changes: <em>vendr-</em> (venir), <em>har-</em> (hacer).',
+      'The future of <em>dar</em> is regular: the whole infinitive + <em>-é, -ás, -á, -emos, -án</em>.',
     ],
   },
 ];
@@ -1411,8 +1498,8 @@ const ICON = {
   shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
 };
 
-const ALL = [...LESSONS, ...SETS].flatMap(l => l.words.map(w => ({ kind: 'word', ...w, lesson: l.id })));
-const DECKS = [...LESSONS.map(l => [l.id, 'Lección ' + l.n]), ...SETS.map(s => [s.id, s.title])];
+const ALL = [...LESSONS, ...SETS, ...BOOKS].flatMap(l => l.words.map(w => ({ kind: 'word', ...w, lesson: l.id })));
+const DECKS = [...LESSONS.map(l => [l.id, 'Lección ' + l.n]), ...SETS.map(s => [s.id, s.title]), ...BOOKS.filter(b => b.words.length).map(b => [b.id, b.title])];
 const primary = w => w.en.split(';')[0].trim();
 const fold = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
 const clean = s => fold(s).replace(/[¿?¡!.,]/g, '').replace(/\s+/g, ' ').trim();
@@ -1448,7 +1535,7 @@ function toggleBook(es) {
 function toggleLearned(es) {
   learned.has(es) ? learned.delete(es) : learned.add(es);
   store.set('es.learned', [...learned]);
-  renderLessons(); renderVocab(); renderBook(); renderNatural(); renderVerbList(); renderStats();
+  renderLessons(); renderVocab(); renderBook(); renderNatural(); renderVerbList(); renderReading(); renderStats();
 }
 
 /* ── Speech ── recorded clips (generate_audio.py), browser voice only for text without a clip yet */
@@ -1504,7 +1591,7 @@ function speak(text, onEnd, fromLoop) {
 const sayBtn = (text, label = 'Listen') => `<button class="icon-btn" data-say="${esc(text)}" aria-label="${label}">${ICON.speak}</button>`;
 
 /* ── Routing ── */
-const TABS = ['lessons', 'vocab', 'natural', 'verbs', 'cards', 'book', 'quiz', 'grammar', 'practice'];
+const TABS = ['lessons', 'vocab', 'natural', 'verbs', 'cards', 'book', 'quiz', 'grammar', 'reading', 'practice'];
 let current = null;
 function go(tab) {
   if (!TABS.includes(tab)) tab = 'lessons';
@@ -1616,6 +1703,23 @@ function renderVocab() {
     return !q || fold(w.es).includes(q) || fold(w.en).includes(q);
   });
   $('#v-list').innerHTML = rows.length ? rows.map(vocabRow).join('') : '<li class="empty">No matches</li>';
+}
+function renderReading() {
+  $('#r-list').innerHTML = BOOKS.length ? BOOKS.map(b => {
+    const ws = ALL.filter(w => w.lesson === b.id);
+    const done = ws.filter(w => learned.has(w.es)).length;
+    return `<article class="lesson panel" id="book-${b.id}">
+      <div class="lesson-head">
+        <div><div class="eyebrow">${b.author}</div><h3>${b.title}</h3>${b.progress ? `<div class="meta">${b.progress}</div>` : ''}</div>
+        ${ws.length ? `<div class="ring" style="--p:${done / ws.length}" title="${done} of ${ws.length} learned"><span>${done}/${ws.length}</span></div>` : ''}
+      </div>
+      ${ws.length ? `<div class="lesson-block"><div class="label">Vocabulary</div><ul class="ex">${ws.map(w => `<li>${sayBtn(w.es)}<div><div class="es">${w.art ? `<span class="art">${w.art}</span> ` : ''}${w.es}</div><div class="en">${w.en.replace(/;\s*/g, '; ')}</div>${w.note ? `<small class="ex-note">${w.note}</small>` : ''}</div></li>`).join('')}</ul></div>` : ''}
+      ${(b.tables || []).map(t => `<div class="lesson-block"><div class="table-scroll"><table class="gtable"><thead><tr>${t.head.map(h => `<th>${h}</th>`).join('')}</tr></thead><tbody>${t.rows.map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div></div>`).join('')}
+      ${(b.passages || []).length ? `<div class="lesson-block"><div class="label">Lines</div><ul class="ex">${b.passages.map(([es, en, note]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div>${note ? `<small class="ex-note">${note}</small>` : ''}</div></li>`).join('')}</ul></div>` : ''}
+      ${(b.notes || []).length ? `<div class="lesson-block"><div class="label">Notes</div><ul class="notes-list">${b.notes.map(n => `<li>${n}</li>`).join('')}</ul></div>` : ''}
+      ${ws.length ? `<div class="lesson-actions"><button class="btn primary" data-study="${b.id}">Flashcards</button><button class="btn" data-quiz="${b.id}">Quiz</button></div>` : ''}
+    </article>`;
+  }).join('') : '<div class="empty panel">No books yet</div>';
 }
 function renderNatural() {
   const ws = deckWords('natural');
@@ -1948,6 +2052,7 @@ renderVocabFilters();
 renderVocab();
 renderBook();
 renderNatural();
+renderReading();
 fcBuild();
 quizSetup();
 renderGrammar();
