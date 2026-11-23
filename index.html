@@ -380,6 +380,13 @@
   .reminder .eyebrow + .row { border-top: 0; }
   .reminder .habit { border-top: 0; flex: 1; }
   @media (max-width: 640px) { .reminder { padding: 0 16px; margin-top: 16px; } }
+  .repeat { list-style: none; padding: 6px 18px; margin-bottom: 8px; }
+  .repeat li { display: flex; align-items: center; gap: 10px; padding: 10px 0; border-top: 1px solid var(--border); }
+  .repeat li:first-child { border-top: 0; }
+  .repeat li > div { flex: 1; min-width: 0; }
+  .repeat .es { font-weight: 600; }
+  .repeat .en { color: var(--muted); font-size: 14px; }
+  .repeat .icon-btn[aria-pressed="true"] { background: var(--accent); color: var(--on-accent); }
   .quote { font-family: Fraunces, Georgia, serif; font-size: 20px; line-height: 1.35; margin-top: 4px; }
   .quote small { display: block; font-family: Inter, sans-serif; font-size: 14px; color: var(--muted); margin-top: 4px; }
   .channels { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
@@ -548,6 +555,9 @@
   <!-- Practice -->
   <section class="view" id="view-practice" hidden>
     <div class="view-head"><h1>Practice</h1></div>
+
+    <h2 style="margin-top:0">Repeat</h2>
+    <ul class="ex repeat panel" id="p-repeat"></ul>
 
     <div class="practice-card panel">
       <div class="practice-head">
@@ -771,6 +781,11 @@ const LESSONS = [
 ];
 
 // Homework reminder shown at the top of every page; checkboxes saved in es.homework as due:<i>.
+// Phrases to repeat aloud over and over (Practice page): [spanish, english]. Loop plays with a pause to repeat.
+const REPEAT = [
+  ['Luego me relajo un poco.', 'Then I relax a little.'],
+];
+
 const PROFE = 'https://www.profedeele.es/actividad/acciones-habituales/';
 const REMINDER = {
   title: 'Homework',
@@ -1331,6 +1346,7 @@ const ICON = {
   next: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>',
   book: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5V5a2 2 0 0 1 2-2h14v15H6.5A2.5 2.5 0 0 0 4 20.5 2.5 2.5 0 0 0 6.5 23H20v-5"/></svg>',
   plus: '<svg class="plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+  loop: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m17 2 4 4-4 4"/><path d="M3 11v-1a4 4 0 0 1 4-4h14"/><path d="m7 22-4-4 4-4"/><path d="M21 13v1a4 4 0 0 1-4 4H3"/></svg>',
   shuffle: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5M4 20 21 3M21 16v5h-5M15 15l6 6M4 4l5 5"/></svg>',
 };
 
@@ -1385,12 +1401,34 @@ function pickVoice() {
   esVoice = pref.map(n => vs.find(v => v.name.startsWith(n))).find(Boolean) || vs.find(v => v.localService) || vs[0] || null;
 }
 if ('speechSynthesis' in window) { pickVoice(); speechSynthesis.onvoiceschanged = pickVoice; }
-function speak(text) {
+// Repeat loop: play, pause about as long as the phrase (time to say it back), play again.
+let loopText = null, loopTimer = null;
+function stopLoop() {
+  clearTimeout(loopTimer); loopText = null;
+  document.querySelectorAll('[data-loop]').forEach(b => b.setAttribute('aria-pressed', 'false'));
+}
+function toggleLoop(text) {
+  const on = loopText === text;
+  speak(null);
+  if (on) return;
+  loopText = text;
+  document.querySelectorAll('[data-loop]').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.loop === text)));
+  const round = () => {
+    if (loopText !== text) return;
+    const t0 = Date.now();
+    speak(text, () => { if (loopText === text) loopTimer = setTimeout(round, Math.max(1500, (Date.now() - t0) * 1.3 + 600)); }, true);
+  };
+  round();
+}
+function speak(text, onEnd, fromLoop) {
+  if (!fromLoop) stopLoop();
   if (curAudio) { curAudio.pause(); curAudio = null; }
+  if (text === null) { if ('speechSynthesis' in window) speechSynthesis.cancel(); return; }
   if ('speechSynthesis' in window) speechSynthesis.cancel();
   const file = AUDIO[text];
   if (file) {
     curAudio = new Audio('audio/' + file);
+    if (onEnd) curAudio.onended = onEnd;
     curAudio.play().catch(() => {});
     return;
   }
@@ -1398,6 +1436,7 @@ function speak(text) {
   const u = new SpeechSynthesisUtterance(text);
   u.lang = esVoice ? esVoice.lang : 'es-ES';
   if (esVoice) u.voice = esVoice;
+  if (onEnd) u.onend = onEnd;
   u.rate = 0.88;
   speechSynthesis.speak(u);
 }
@@ -1409,6 +1448,7 @@ let current = null;
 function go(tab) {
   if (!TABS.includes(tab)) tab = 'lessons';
   current = tab;
+  if (loopText) speak(null);
   document.querySelectorAll('.view').forEach(v => v.hidden = v.id !== 'view-' + tab);
   document.querySelectorAll('.tab').forEach(a => a.setAttribute('aria-current', a.dataset.tab === tab ? 'page' : 'false'));
   if (location.hash.slice(1) !== tab) history.replaceState(null, '', '#' + tab);
@@ -1752,6 +1792,7 @@ const didPractice = d => (practice[dayKey(d)] || []).length > 0;
 const monday = () => { const d = new Date(); return addDays(d, -((d.getDay() + 6) % 7)); };
 const weekDays = () => Array.from({ length: 7 }, (_, i) => addDays(monday(), i)).filter(didPractice).length;
 function renderPractice() {
+  $('#p-repeat').innerHTML = REPEAT.map(([es, en]) => `<li>${sayBtn(es)}<div><div class="es">${es}</div><div class="en">${en}</div></div><button class="icon-btn" data-loop="${esc(es)}" aria-pressed="${loopText === es}" aria-label="Repeat">${ICON.loop}</button></li>`).join('');
   const today = new Date(), tk = dayKey(today), done = practice[tk] || [];
   $('#p-week').innerHTML = Array.from({ length: 7 }, (_, i) => {
     const d = addDays(monday(), i), k = dayKey(d);
@@ -1788,6 +1829,7 @@ document.addEventListener('click', e => {
   }
   const d = t.dataset;
   if (d.say !== undefined) { e.stopPropagation(); speak(d.say); return; }
+  if (d.loop !== undefined) return toggleLoop(d.loop);
   if (d.learn) return toggleLearned(d.learn);
   if (d.book) return toggleBook(d.book);
   if (d.vf) { vFilter = d.vf; renderVocabFilters(); return renderVocab(); }

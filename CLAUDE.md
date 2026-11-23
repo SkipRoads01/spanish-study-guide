@@ -7,6 +7,8 @@ Single-page static site (`index.html`), built from the user's weekly one-hour iT
 - `PLAN` (+ `PLAN_START`) is the tutor's 8-week program shown at the top of Lessons: 4 two-week stages, each with a challenge; the current week is computed from the date. `HABITS` is the tutor's weekly practice list, target `PRACTICE_TARGET` days/week.
 - GRAMMAR entries with `verbs: 'tense' | 'inf' | 'reflexive' | 'like'` (tenses, verb + infinitive, reflexive, verbs like gustar) show on the Verbs page instead of Grammar; Verbs also lists every verb. Words with `natural: true` (phrasing the tutor flags as natural) show on the Natural page.
 - Lessons can have `notes: [[spanish, english]]` (things the tutor writes down in class, with audio).
+- `REPEAT` ([spanish, english]) is the Repeat list at the top of Practice: phrases the user names to say aloud over and over; each has play and a loop button (plays, pauses about as long as the phrase, plays again). Recorded by generate_audio.py.
+- `class-notes/<date>.txt`: the tutor's class chat, pasted by the user and held for that date's lesson entry; turn it into `notes` when the lesson is added.
 - Lessons can have `homework: { title, url, tasks: [...] }`; tasks are checkboxes saved in `es.homework`.
 - `REMINDER` is the homework banner at the top of every page: `tasks: [{ t, url }]`, checkboxes saved in `es.homework` as `due:<index>` (append new tasks rather than reorder, or saved checks shift). Hidden when `tasks` is empty.
 - Lessons can have `corrections: [[what I said, correct version, short note]]`; only the correct version is shown (with audio). The user wants only what's right: never show the wrong form, and notes state the rule without mentioning the mistake.

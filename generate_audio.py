@@ -46,6 +46,7 @@ def spanish_strings():
         ...GRAMMAR.flatMap(g => g.examples.map(e => [e[0], e[0]])),
         ...LESSONS.flatMap(l => (l.corrections || []).map(c => [c[1], c[1]])),
         ...LESSONS.flatMap(l => (l.notes || []).map(n => [n[0], n[0]])),
+        ...REPEAT.map(r => [r[0], r[0]]),
       ];
       console.log(JSON.stringify([...new Map(out).entries()]));
     """
